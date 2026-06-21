@@ -25,7 +25,7 @@
 	<field name="poid" class="java.lang.Double"/>
 	<field name="observation" class="java.lang.String"/>
 	<field name="origin" class="java.lang.String"></field>
-	<field name="bloc" class="java.lang.String"></field>
+	<field name="bloc" class="java.lang.Long"></field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>

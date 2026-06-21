@@ -20,7 +20,7 @@
 	<field name="poid" class="java.lang.Double"/>
 	<field name="observation" class="java.lang.String"/>
 	<field name="origin" class="java.lang.String"></field>
-	<field name="bloc" class="java.lang.String"></field>
+	<field name="bloc" class="java.lang.Long"></field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -47,8 +47,7 @@
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{bloc}]]></textFieldExpression>
-			</textField>
+				<textFieldExpression><![CDATA[$F{nbColis} > 1 ? $F{bloc} + "-" + ($F{bloc} + $F{nbColis} - 1) : $F{bloc}.toString()]]></textFieldExpression>			</textField>
 			<textField>
 				<reportElement x="150" y="245" width="130" height="18" uuid="da7fa4ac-c864-4495-adb3-da382f03d63a"/>
 				<textElement>
@@ -83,9 +82,25 @@
 				<text>Kg</text>
 			</staticText>
 
+			<staticText>
+				<reportElement x="80" y="530" width="80" height="20"></reportElement>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text>Date arrivée </text>
+
+			</staticText>
+			<textField>
+				<reportElement x="170" y="530" width="80" height="20"></reportElement>
+
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateArrivee} != null ? java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy").format($F{dateArrivee}) : ""]]></textFieldExpression>
+			</textField>
 			<textField>
 
-				<reportElement x="180" y="570" width="100" height="20" uuid="f3b6610d-8ba9-4a89-94de-c6c900f3a04d"/>
+				<reportElement x="180" y="530" width="100" height="20" uuid="f3b6610d-8ba9-4a89-94de-c6c900f3a04d"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
