@@ -1,0 +1,2 @@
+sudo unzip -X fichier.jar -d dossier
+jar -cf0m ../fichier.jar META-INF/MANIFEST.MF .

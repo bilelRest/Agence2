@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Consultation avis</title>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="card my-4">
+        <div class="card-header bg-info">
+            <h1 class="text-left text-light">Consultation avis</h1>
+        </div>
+
+        <div class="card-body ">
+            <form th:action="@{avisconsul}" method="get" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="colis" class="form-label">Saisir le N° du colis</label>
+                </div>
+                <div class="col-auto">
+                    <input required id="colis" type="text" name="colis" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-success">Rechercher</button>
+                </div>
+            </form>
+            <br>
+            <div th:if="${empty}" class="alert alert-warning">
+
+                <h6 th:text="'Aucun colis trouvé avec cette référence :'+${num}"></h6>
+            </div>
+        </div>
+
+        <div th:if="${douane!=null}" class="card-body">
+            <form id="formEdit" action="#" method="post">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label for="numColis" class="form-label">Numéro</label>
+                        <input readonly type="text" class="form-control" id="numColis" th:value="${douane.numColis}" name="numColis">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="bloc" class="form-label">Bloc</label>
+                        <input readonly th:value="${douane.bloc}" type="text" class="form-control" id="bloc" name="bloc">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="nbColis" class="form-label">Nombre</label>
+                        <input readonly th:value="${douane.nbColis}" type="number" class="form-control" id="nbColis" name="nbColis">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="poidColis" class="form-label">Poids (kg)</label>
+                        <input readonly th:value="${douane.poid}" type="text" class="form-control" id="poidColis" name="poidColis">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="nomDest" class="form-label">Destinataire</label>
+                        <input readonly th:value="${douane.nom}" type="text" class="form-control" id="nomDest" name="nomDest">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="origin" class="form-label">Origine</label>
+                        <input readonly th:value="${douane.origin}" type="text" class="form-control" id="origin" name="origin">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="datear" class="form-label">Date arrivée</label>
+                        <input readonly th:value="${douane.dateArrivee}" type="date" class="form-control" id="datear" name="datear">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="form-check">
+                            <input disabled readonly class="form-check-input" th:checked="${douane.observation=='Sans facture'}" type="checkbox" id="observation" name="observation">
+                            <label class="form-check-label" for="observation">Sans facture</label>
+                        </div>
+                    </div>
+                    <div  th:if="${reprintdelivered}" class="card-shadow">
+                        <a style="margin-left:80%"
+                           target="_blank"
+                           class="btn btn-success btn-print"
+                           th:href="@{/reprintdelivered(colis=${douane.numColis})}"
+                           title="Imprimer ce colis">
+                            <i class="bi bi-printer-fill"></i>Imprimer
+                        </a>
+                    </div>
+                    <div  th:if="${reprintnotdelivered}" class="card-shadow">
+                        <a style="margin-left:80%"
+                           target="_blank"
+                           class="btn btn-success btn-print"
+                           th:href="@{/reprintnotdelivered(colis=${douane.numColis})}"
+                           title="Imprimer ce colis">
+                            <i class="bi bi-printer-fill"></i>Imprimer
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Messages d'état -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-danger text-center" th:if="${exist}">
+                            Colis déjà existant
+                        </div>
+                        <div class="alert alert-success text-center" th:if="${success}">
+                            Ajouté avec succès
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Rôles</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Gestion des Permissions</h2>
+                <a th:href="@{/utilisateur}" class="btn btn-light">
+                    <i class="bi bi-arrow-left"></i> Utilisateur
+                </a>
+                <a th:href="@{/roles}" class="btn btn-light">
+                    <i class="bi bi-arrow-left"></i> Roles
+                </a>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <form th:action="@{/roleadd}" method="post">
+                    <input type="hidden" name="roleName" th:value="${role.name}" />
+
+                    <h4 class="mb-3">Permissions pour le rôle : <strong th:text="${role.name}"></strong></h4>
+
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Permission</th>
+                            <th>Accorder</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="perm : ${permissions}">
+                            <td th:text="${perm.nom}"></td>
+                            <td>
+                                <input class="form-check-input" type="checkbox"
+                                       th:id="${'perm-' + perm.id}"
+                                       th:name="permissionIds"
+                                       th:value="${perm.id}"
+                                       th:checked="${#lists.contains(role.permissionList, perm)}">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-save"></i> Enregistrer
+                        </button>
+                        <a th:href="@{/}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

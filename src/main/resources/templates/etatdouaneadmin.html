@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport de douane</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .table-responsive { overflow-x: auto; }
+        .text-truncate { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .text-end { text-align: right; }
+    </style>
+    <script>
+        function formatDate(dateString) {
+            if (!dateString) return '--/--/----';
+            const date = new Date(dateString);
+            return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+        }
+
+        function printTable() {
+            const date1 = document.getElementById('date1').value;
+            const date2 = document.getElementById('date2').value;
+            const isSameDay = date1 === date2;
+
+            let totalMontant = 0, totalColis = 0, totalDroitDouane = 0,
+                totalFraisDedouane = 0, totalFraisReemballage = 0, totalFraisMagasin = 0;
+
+            // Sélectionner uniquement les lignes de données (en excluant la ligne de totaux)
+            const dataRows = Array.from(document.querySelectorAll('tbody tr')).filter(row => !row.classList.contains('table-info'));
+
+            const rows = dataRows.map(row => {
+                const cells = row.cells;
+                const montant = parseFloat(cells[9].textContent.replace(/\s/g, '').replace(',', '.')) || 0;
+                const nbColis = parseFloat(cells[4].textContent.replace(/\s/g, '').replace(',', '.')) || 0;
+                const droitDouane = parseFloat(cells[5].textContent.replace(/\s/g, '').replace(',', '.')) || 0;
+                const fraisDedouane = parseFloat(cells[6].textContent.replace(/\s/g, '').replace(',', '.')) || 0;
+                const fraisReemballage = parseFloat(cells[7].textContent.replace(/\s/g, '').replace(',', '.')) || 0;
+                const fraisMagasin = parseFloat(cells[8].textContent.replace(/\s/g, '').replace(',', '.')) || 0;
+
+                totalMontant += montant;
+                totalColis += nbColis;
+                totalDroitDouane += droitDouane;
+                totalFraisDedouane += fraisDedouane;
+                totalFraisReemballage += fraisReemballage;
+                totalFraisMagasin += fraisMagasin;
+
+                return `
+                    <tr>
+                        <td>${cells[0].textContent}</td>
+                        <td>${cells[1].textContent}</td>
+                        <td>${cells[2].textContent}</td>
+                        <td>${cells[3].textContent}</td>
+                        <td class="text-end">${nbColis}</td>
+                        <td class="text-end">${droitDouane.toFixed(3)}</td>
+                        <td class="text-end">${fraisDedouane.toFixed(3)}</td>
+                        <td class="text-end">${fraisReemballage.toFixed(3)}</td>
+                        <td class="text-end">${fraisMagasin.toFixed(3)}</td>
+                        <td class="text-end">${montant.toFixed(3)}</td>
+                    </tr>
+                `;
+            });
+
+            const totCRA603 = totalFraisDedouane;
+            const totCRA600 = totalFraisReemballage + totalFraisMagasin;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Rapport de douane</title>
+                    <style>
+                        body { font-family: Arial; font-size: 12px; margin: 10px; }
+                        .title { font-size: 16px; font-weight: bold; text-align: center; }
+                        .period { font-size: 13px; color: #555; text-align: center; margin-bottom: 10px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                        th, td { border: 1px solid #ddd; padding: 5px; }
+                        th { background-color: #f2f2f2; }
+                        .text-end { text-align: right; }
+                        .footer { text-align: center; font-size: 11px; color: #666; margin-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="title">Agence Rapid Poste Sfax ElBousten</div>
+                    <div class="title">${isSameDay ? 'ETAT DU REGLEMENT DES COLIS SOUS DOUANE' : 'ETAT PERIODIQUE DU REGLEMENT DES COLIS SOUS DOUANE'}</div>
+                    <div class="period">${isSameDay ? 'JOURNEE : ' + formatDate(date1) : 'Période du ' + formatDate(date1) + ' au ' + formatDate(date2)}</div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N° Séquence</th>
+                                <th>N° de colis</th>
+                                <th>Client</th>
+                                <th>Date de livraison</th>
+                                <th>Nbre de colis</th>
+                                <th>Droit Douane</th>
+                                <th>Frais Dédouane</th>
+                                <th>Frais Reemballage</th>
+                                <th>Frais Magasin</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows.join('')}</tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end"><b>Totaux</b></td>
+                                <td class="text-end"><b>${totalColis}</b></td>
+                                <td class="text-end"><b>${totalDroitDouane.toFixed(3)}</b></td>
+                                <td class="text-end"><b>${totalFraisDedouane.toFixed(3)}</b></td>
+                                <td class="text-end"><b>${totalFraisReemballage.toFixed(3)}</b></td>
+                                <td class="text-end"><b>${totalFraisMagasin.toFixed(3)}</b></td>
+                                <td class="text-end"><b>${totalMontant.toFixed(3)}</b></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <table style="width: fit-content">
+                        <thead>
+                            <tr><th>Ligne CRA</th><th>603</th><th>606</th><th>600</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Montant</td>
+                                <td class="text-end">${totCRA603.toFixed(3)}</td>
+                                <td class="text-end">${totalDroitDouane.toFixed(3)}</td>
+                                <td class="text-end">${totCRA600.toFixed(3)}</td>
+                                <td class="text-end">${totalMontant.toFixed(3)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-left:60%;border:1px solid black;padding:10px;width:200px;height:100px;">
+                        <div>Imprimé le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</div>
+                        <div style="text-align:center;margin-top:20px;">Signature : ___________________</div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => printWindow.print(), 500);
+        }
+    </script>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="card mb-3">
+        <div class="card-header text-center bg-primary text-white">
+            <h1>Etat périodique du règlement des colis sous douane</h1>
+        </div>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/etatperiode}" method="get">
+            <div class="card-header bg-light row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label for="date1">Date de début</label>
+                    <input type="date" id="date1" name="date1" class="form-control" th:value="${date1}">
+                </div>
+                <div class="col-md-4">
+                    <label for="date2">Date de fin</label>
+                    <input type="date" id="date2" name="date2" class="form-control" th:value="${date2}">
+                </div>
+                <div class="col-md-3">
+                    <label for="agent">Agent</label>
+                    <select id="agent" name="agent" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- Tous les agents --</option>
+                        <option th:each="ag : ${agents}"
+                                th:value="${ag.username}"
+                                th:text="${ag.username}"
+                                th:selected="${agent == ag.username}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary" title="Rechercher">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card-body table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>N° Séquence</th>
+                    <th>N° de colis</th>
+                    <th>Client</th>
+                    <th>Date Livraison</th>
+                    <th>Nbre de colis</th>
+                    <th>Droit Douane</th>
+                    <th>Frais Dédouane</th>
+                    <th>Frais Reemballage</th>
+                    <th>Frais Magasin</th>
+                    <th>Total à Payer</th>
+                    <th>Utilisateur</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="colis : ${colislise}">
+                    <td th:text="${colis.sequence}" class="text-truncate"></td>
+                    <td th:text="${colis.numColis}"></td>
+                    <td th:text="${colis.nom}"></td>
+                    <td th:text="${colis.dateSortie}"></td>
+                    <td th:text="${colis.nbColis}" class="text-end"></td>
+                    <td th:text="${#numbers.formatDecimal(colis.droitDouane, 1, 3)}" class="text-end"></td>
+                    <td th:text="${#numbers.formatDecimal(colis.fraisDedouane, 1, 3)}" class="text-end"></td>
+                    <td th:text="${#numbers.formatDecimal(colis.fraisReemballage, 1, 3)}" class="text-end"></td>
+                    <td th:text="${#numbers.formatDecimal(colis.fraisMagasin, 1, 3)}" class="text-end"></td>
+                    <td th:text="${#numbers.formatDecimal(colis.totPayer, 1, 3)}" class="text-end"></td>
+                    <td th:text="${colis.getAppUser()==null?'':colis.getAppUser().getUsername()}"></td>
+                </tr>
+                <tr class="table-info">
+                    <td colspan="4" class="text-end"><strong>Totaux</strong></td>
+                    <td class="text-end"><strong th:text="${#numbers.formatDecimal(#aggregates.sum(colislise.![nbColis]), 1, 0)}"></strong></td>
+                    <td class="text-end"><strong th:text="${#numbers.formatDecimal(#aggregates.sum(colislise.![droitDouane]), 1, 3)}"></strong></td>
+                    <td class="text-end"><strong th:text="${#numbers.formatDecimal(#aggregates.sum(colislise.![fraisDedouane]), 1, 3)}"></strong></td>
+                    <td class="text-end"><strong th:text="${#numbers.formatDecimal(#aggregates.sum(colislise.![fraisReemballage]), 1, 3)}"></strong></td>
+                    <td class="text-end"><strong th:text="${#numbers.formatDecimal(#aggregates.sum(colislise.![fraisMagasin]), 1, 3)}"></strong></td>
+                    <td class="text-end"><strong th:text="${#numbers.formatDecimal(#aggregates.sum(colislise.![totPayer]), 1, 3)}"></strong></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-success ms-2" onclick="printTable()">
+                <i class="bi bi-printer"></i> Imprimer
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Manifeste</title>
+</head>
+<body>
+<div id="template" layout:fragment="content1">
+    <div class="card">
+        <div class="card-header bg-light">
+            <form method="get" th:action="@{/manifest}">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <label for="date1" class="form-label mb-0">Choisir la date</label>
+
+                    <input type="date" id="date1" name="date1" class="form-control" th:value="${date1}" style="max-width: 200px;">
+
+                    <button type="submit" class="btn btn-outline-primary d-flex align-items-center">
+                        <i class="bi bi-search me-1"></i> Chercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+<div th:if="${list.size==0}" >
+    <h1 class="alert alert-secondary" >Aucun colis trouvé</h1>
+
+</div>
+
+    <div th:if="${list.size()>0}" class="card-body">
+        <div style="margin-top:10px" class="alert alert-primary d-flex align-items-center justify-content-between p-3">
+            <div class="d-flex align-items-center">
+                <h4 class="m-0" th:text="'Total : ' + ${list.size()}"></h4>
+            </div>
+
+            <div th:if="${list.size() > 0}">
+                <form method="get" th:action="@{/manifestprint}" target="_blank" class="m-0">
+                    <input type="hidden" name="date1" th:value="${date1}">
+                    <button class="btn btn-success d-flex align-items-center">
+                        <i class="bi bi-printer me-2"></i>
+                        <span>Imprimer</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+            <th>Bloc</th>
+            <th>Num Colis</th>
+            <th>Nb colis</th>
+            <th>Poids</th>
+            <th>Déstinataire</th>
+            <th>Origine</th>
+            </thead>
+            <tbody></tbody>
+            <tr th:each="douane,ind:${list}">
+                <td th:text="${douane.bloc}"></td>
+                <td th:text="${douane.numColis.toUpperCase()}"></td>
+                <td th:text="${douane.nbColis}"></td>
+                <td th:text="${douane.poid}"></td>
+                <td th:text="${douane.nom}"></td>
+                <td th:text="${douane.origin}"></td>
+            </tr>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

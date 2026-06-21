@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Distribution des avis</title>
+
+    <style>
+        /* Masquer tout sauf le bloc #impression lors de l'impression */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #impression, #impression * {
+                visibility: visible;
+            }
+            #impression {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+    <script>
+        const audio = document.getElementById("alertAudio");
+        audio.volume = 2.0; // Valeur entre 0.0 (silence) et 1.0 (volume max)
+    </script>
+</head>
+<body>
+
+<div layout:fragment="content1">
+    <div class="card">
+
+        <!-- Barre de sélection (hors impression) -->
+        <div class="card-header no-print">
+            <form th:action="@{/distribution}" method="get" class="d-flex gap-2 align-items-center">
+                <select   th:if="${selected==false}" name="agent" class="form-select w-auto" onchange="this.form.submit()">
+                    <option value="">-- Sélectionnez un agent --</option>
+                    <option  th:each="agent : ${agents}"
+                            th:value="${agent}"
+                            th:text="${agent}"
+                            th:selected="${agent == selectedAgent}"></option>
+                </select>
+                <input readonly style="border:none" class="bg-primary text-light" th:if="${selected}" th:value="${selectedAgent}" name="agent" >
+
+                <input
+                        th:if="${selectedAgent != null and selectedAgent != ''}"
+                        th:attr="autofocus=${selectedAgent != null and selectedAgent != ''}"
+                        name="num"
+                        type="text"
+                        class="form-control w-auto"
+                        placeholder="Num Colis"
+                        required
+                        onchange="this.form.submit()">
+
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus"></i>
+                </button>
+                <a type="button" th:href="@{/print-avis(agent=${selectedAgent})}" onclick="setTimeout(function() { window.location.href = '/distribution'; }, 2000)" target="_blank" class="btn btn-secondary" >
+                    <i class="bi bi-printer"></i> Imprimer
+                </a>
+            </form>
+        </div>
+
+        <!-- Alerte colis existant -->
+        <div class="alert alert-warning no-print" th:if="${exist}">
+            <audio id="alertAudio" src="/empty.mp3" autoplay></audio>
+
+            <script>
+                const audio = document.getElementById("alertAudio");
+                audio.volume = 1.0; // Valeur entre 0.0 (silence) et 1.0 (volume max)
+            </script>
+            <h4 th:text="'Colis déjà dans la liste : '+${num}"></h4>
+        </div>
+        <div class="alert alert-danger no-print" th:if="${empty}">
+            <audio src="/error.mp3" autoplay></audio>
+            <h4 th:text="'Aucun colis avec ce numéro : '+${num}"></h4>
+        </div>
+
+        <!-- Zone à imprimer -->
+        <div style="margin-top:1%" class="card-body" id="impression">
+            <h4 class="text-center mb-4" th:text="'Distribution des colis pour l’agent : ' + ${selectedAgent}"></h4>
+
+            <table style="margin-top:1%" class="table table-bordered ">
+                <thead class="table-light">
+                <tr>
+                    <th>Num Colis</th>
+                    <th>Bloc</th>
+                    <th>Destinataire</th>
+                    <th>Décharge</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  th:each="col : ${list}">
+                    <td th:text="${col.numColis}"></td>
+                    <td th:text="${col.bloc}"></td>
+                    <td th:text="${col.nom}"></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

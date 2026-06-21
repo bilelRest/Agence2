@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.js"></script>
+
+    <title>Plateforme Rapide Poste Sfax ElBousten</title>
+    <style>
+        :root {
+            --poste-blue: #005BAE;
+            --poste-yellow: #FFD100;
+            --poste-orange: #F6921E;
+            --poste-light: #F5F7FA;
+        }
+
+        body {
+            background-color: var(--poste-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-primary {
+            background: linear-gradient(135deg, var(--poste-blue) 0%, #003D7A 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #offcanvasMenu {
+            width: 280px;
+            background: linear-gradient(to bottom, var(--poste-blue) 0%, #003D7A 100%);
+        }
+
+        .nav-item a {
+            color: white !important;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item a i {
+            color: var(--poste-yellow);
+        }
+
+        .platform-title {
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        .logo-container {
+            background-color: white;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-menu {
+            border: 2px solid var(--poste-yellow);
+            color: var(--poste-yellow);
+        }
+
+        .btn-menu:hover {
+            background-color: var(--poste-yellow);
+            color: var(--poste-blue);
+        }
+
+        .sub-menu {
+            background-color: rgba(0,0,0,0.1);
+            border-left: 3px solid var(--poste-orange);
+            border-radius: 0 5px 5px 0;
+        }
+
+        .active-menu-item {
+            background-color: var(--poste-orange) !important;
+            font-weight: bold;
+        }
+
+        .blink {
+            animation: blinker 1.5s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .header-divider {
+            height: 3px;
+            background: linear-gradient(to right, var(--poste-blue), var(--poste-yellow), var(--poste-orange));
+            margin: 0;
+        }
+
+        /* Styles ajoutés pour le bouton de déconnexion */
+        .btn-logout {
+            background-color: transparent;
+            color: var(--poste-yellow);
+            border: 1px solid var(--poste-yellow);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--poste-yellow);
+            color: var(--poste-blue);
+            transform: rotate(180deg);
+        }
+
+        .btn-logout:active {
+            transform: scale(0.95) rotate(180deg);
+        }
+
+    </style>
+</head>
+
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-primary navbar-primary sticky-top">
+    <div class="container-fluid">
+        <!-- Menu Button -->
+        <button title="Afficher le menu" class="btn btn-menu me-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu">
+            <i class="bi bi-list fs-4 text-light"></i>
+        </button>
+
+        <!-- ISET Logo -->
+        <div class="logo-container mx-2">
+            <img class="img-fluid" alt="Logo RapidPost" style="width:50px; height:40px;" src="/rplogo.png"/>
+        </div>
+        <div class="row align-items-center ms-5 p-3 rounded-pill"
+             style="border: 2px solid rgba(255,255,255,0.6); background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));">
+            <div class="col-auto">
+                <h5 class="text-light mb-0 fw-bold" style="font-size: 1.1rem;">
+                    <i class="bi bi-lightning-charge-fill text-white me-2"></i>DirectPost
+                </h5>
+            </div>
+            <div class="col-auto">
+                <a target="_blank" class="btn btn-outline-light btn-sm d-flex align-items-center"
+                   href="https://directpost.apirest.pro/passenger"
+                   style="border-radius: 20px; padding: 0.4rem 1rem; border-width: 2px; font-weight: 600; box-shadow: 0 2px 8px rgba(255,255,255,0.3);">
+                    <i class="bi bi-send-fill me-1" style="font-size: 0.9rem;"></i>
+                    <span style="font-size: 0.85rem;">Accéder</span>
+                </a>
+            </div>
+        </div>
+        <!-- Platform Title -->
+        <div class="text-center flex-grow-1">
+            <h3 class="platform-title text-light mb-0">
+                <span class="text-warning">Plateforme Rapide</span>
+                <span class="text-white">Poste Sfax ElBousten</span>
+            </h3>
+        </div>
+
+        <!-- Poste Logo -->
+        <div>
+            <a href="welcome" class="btn btn-outline-warning" title="Page d'accueil" >Accueil</a>
+        </div>
+        <div class="logo-container ms-2">
+            <img src="/poste.png" class="img-fluid" alt="Logo Poste" style="width:45px; height:45px;" />
+        </div>
+
+        <!-- Zone utilisateur et bouton de déconnexion - Partie modifiée -->
+        <div class="d-flex align-items-center gap-3 ms-2">
+
+            <!-- Bouton Clé + Nom d'utilisateur -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="/updtps" title="Changer le mot de passe" class="btn btn-success">
+                    <i class="bi bi-key fs-5"></i>
+                </a>
+
+                <span class="text-warning fw-bold fs-6" th:text="${logged}">Utilisateur</span>
+            </div>
+
+            <!-- Bouton de déconnexion -->
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button title="Déconnecter" type="submit" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+    <div class="header-divider"></div>
+</nav>
+
+<!-- Offcanvas Menu -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title text-light" id="offcanvasMenuLabel">
+            <i class="bi bi-postage-heart-fill text-warning me-2"></i>
+            Menu Principal
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <ul class="nav flex-column p-3">
+            <li class="nav-item">
+                <a class="nav-link text-light py-3" style="cursor: pointer;" onclick="toggleMenu2()">
+                    <i class="bi bi-box-seam text-warning me-3 fs-5"></i>
+                    Colis en Douane
+                    <i class="bi bi-chevron-down float-end mt-1"></i>
+                </a>
+            </li>
+
+            <div id="dropMenu2" class="sub-menu ms-4 mb-2" style="display:none;">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="dounecalc">
+                            <i class="bi bi-calculator-fill text-orange me-2"></i>
+                            Calcul des frais
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/avisedit">
+                            <i class="bi bi-plus text-orange me-2"></i>
+                            Nouveau avis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/manifest">
+                            <i class="bi bi-file-earmark-text text-orange me-2"></i>
+                            Manifeste
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/avisconsul">
+                            <i class="bi bi-search text-orange me-2"></i>
+                            Consulter les avis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="distribution">
+                            <i class="bi bi-truck text-orange me-2"></i>
+                            Distribution
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="etatdouaneagent">
+                            <i class="bi bi-printer-fill text-orange me-2"></i>
+                            Situation
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <li class="nav-item">
+                <a class="nav-link text-light py-3" style="cursor: pointer;" onclick="toggleMenu()">
+                    <i class="bi bi-file-earmark-text text-warning me-3 fs-5"></i>
+                    Bulletin N°3
+                    <i class="bi bi-chevron-down float-end mt-1"></i>
+                </a>
+            </li>
+
+            <div id="dropMenu" class="sub-menu ms-4 mb-2" style="display:none;">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/b3consul">
+                            <i class="bi bi-search text-orange me-2"></i>
+                            Consulter
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/sms">
+                            <i class="bi bi-chat-text text-orange me-2"></i>
+                            Notification
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+
+            <li class="nav-item">
+                <a class="nav-link text-light py-3" style="cursor: pointer;" onclick="toggleMenu4()">
+                    <i class="bi bi-arrow-return-left text-warning me-3 fs-5"></i>
+                    Retours B3
+                    <i class="bi bi-chevron-down float-end mt-1"></i>
+                </a>
+            </li>
+
+            <div id="dropMenu4" class="sub-menu ms-4 mb-2" style="display:none;">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/retourb3">
+                            <i class="bi bi-search text-orange me-2"></i>
+                            Consulter
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="/retourb3rcp">
+                            <i class="bi bi-check-circle text-orange me-2"></i>
+                            Réception
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <li class="nav-item">
+                <a class="nav-link text-light py-3" style="cursor: pointer;" onclick="toggleMenu3()">
+                    <i class="bi bi-speedometer2 text-warning me-3 fs-5"></i>
+                    Dashboard
+                    <i class="bi bi-chevron-down float-end mt-1"></i>
+                </a>
+            </li>
+
+            <div id="dropMenu3" class="sub-menu ms-4 mb-2" style="display:none;">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="dashdouane">
+                            <i class="bi bi-graph-up text-orange me-2"></i>
+                            Statistiques Douane
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="dashb3">
+                            <i class="bi bi-3-square text-orange me-2"></i>
+                            Statistiques B3
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="quinzaine">
+                            <i class="bi bi-calendar-week text-orange me-2"></i>
+                            Quinzaine
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="etatperiode">
+                            <i class="bi bi-file-earmark-bar-graph text-orange me-2"></i>
+                            État périodique
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="etatjourneeadmin">
+                            <i class="bi bi-file-earmark-bar-graph text-orange me-2"></i>
+                            Journée globale
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="history">
+                            <i class="bi bi-file-earmark-bar-graph text-orange me-2"></i>
+                            Historique colis
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <li th:if="${isAdmin}" class="nav-item">
+                <a class="nav-link text-light py-3" style="cursor: pointer;" onclick="toggleMenu5()">
+                    <i class="bi bi-shield-lock text-warning me-3 fs-5"></i>
+                    Administration
+                    <i class="bi bi-chevron-down float-end mt-1"></i>
+                </a>
+            </li>
+
+            <div id="dropMenu5" class="sub-menu ms-4 mb-2" style="display:none;">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="utilisateur">
+                            <i class="bi bi-people-fill text-orange me-2"></i>
+                            Utilisateurs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light py-2" href="roles">
+                            <i class="bi bi-person-lock text-orange me-2"></i>
+                            Rôles
+                        </a>
+                    </li>
+                    <li class="nav-item text-danger">
+                        <a class="nav-link text-danger py-2" href="permission">
+                            <i class="bi bi-key-fill text-danger me-2"></i>
+                            Permissions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+        </ul>
+
+
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid mt-3">
+    <section layout:fragment="content1" class="p-3 bg-white rounded-3 shadow-sm">
+        <!-- Le contenu dynamique ira ici -->
+    </section>
+</div>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('dropMenu');
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleMenu2() {
+        const menu = document.getElementById('dropMenu2');
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleMenu3() {
+        const menu = document.getElementById('dropMenu3');
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleMenu4() {
+        const menu = document.getElementById('dropMenu4');
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleMenu5() {
+        const menu = document.getElementById('dropMenu5');
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+
+    // Ajoute la classe active au menu cliqué
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active-menu-item'));
+                this.classList.add('active-menu-item');
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Modification colis</title>
+    <style>
+        .form-section {
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-title {
+            border-bottom: 2px solid #0dcaf0;
+            padding-bottom: 0.5rem;
+        }
+        .btn-submit {
+            background-color: #0d6efd;
+            color: white;
+            padding: 0.5rem 2rem;
+            font-weight: bold;
+        }
+        .btn-submit:hover {
+            background-color: #0b5ed7;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div th:if="${douane != null}" class="card-body">
+                <form th:action="@{/update-colis}" method="post">
+                    <div class="form-section">
+                        <h4 class="card-title text-info mb-4"><i class="bi bi-box-seam"></i> Détails du colis</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Référence</label>
+                                    <input name="numColis" th:value="${douane.numColis}" class="form-control text-bg-warning" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Bloc</label>
+                                    <input th:value="${douane.bloc}" name="bloc" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Date d'arrivée</label>
+                                    <input type="date" th:value="${douane.dateArrivee}" name="dateArrivee" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Date de sortie</label>
+                                    <input type="date" th:value="${douane.dateSortie}" name="dateSortie" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Origine</label>
+                                    <input th:value="${douane.origin}" name="origin" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Déstinataire</label>
+                                    <input th:value="${douane.nom}" name="nom" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Poids (kg)</label>
+                                    <input th:value="${douane.poid}" name="poid" type="number" step="0.01" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Quantité</label>
+                                    <input th:value="${douane.nbColis}" name="nbColis" type="number" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${douane.isDelivered()}" class="form-section">
+                        <h4 class="card-title text-info mb-4"><i class="bi bi-calculator"></i> Calcul des frais</h4>
+                        <div th:if="${douane.isDelivered()}" class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="sequence" class="form-label fw-bold">Numéro de séquence</label>
+                                <input type="text"
+                                       id="sequence"
+                                       name="sequence"
+                                       th:value="${douane.sequence}"
+                                       class="form-control"
+                                       required>
+                                <div class="invalid-feedback" th:if="${notValidated}">
+                                    Numéro de séquence existant ou invalide.
+                                </div>
+                            </div>
+
+                            <div th:if="${douane.isDelivered()}" class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Frais de douane (TND)</label>
+                                <input type="number"
+                                       id="droit"
+                                       name="droitDouane"
+                                       step="0.001"
+                                       th:value="${douane.droitDouane}"
+                                       class="form-control"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                            <div class="col-md-4 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-submit w-100">
+                                    <i class="bi bi-check-circle"></i> Valider
+                                </button>
+                            </div>
+
+
+
+                    <div th:if="${douane.totPayer != 0}" class="text-center py-3">
+                        <div class="display-5 fw-bold text-primary">
+                            Total à payer:
+                            <span id="total" th:text="${#numbers.formatDecimal(douane.totPayer, 1, 3, 'POINT')}"></span> TND
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

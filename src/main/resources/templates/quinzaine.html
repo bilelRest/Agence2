@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Edition quinzaine</title>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="h4 mb-0">Comptabilité de la quinzaine</h1>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form th:action="@{quinzaine}" method="get" class="row g-3 mb-4 p-3 bg-light rounded">
+                    <div class="col-md-4">
+                        <label for="date1" class="form-label">Date de début</label>
+                        <input th:value="${date1}" type="date" id="date1" name="date1" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="date2" class="form-label">Date de fin</label>
+                        <input th:value="${date2}" type="date" name="date2" id="date2" class="form-control">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-search"></i> Rechercher
+                        </button>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead class="table-dark">
+                        <tr>
+                            <th class="text-center">N° de séquence</th>
+                            <th class="text-center">N° de bloc</th>
+                            <th class="text-center">Nombre de colis</th>
+                            <th class="text-center">Droit de douane</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="q,index:${results}">
+                            <td class="text-center" th:text="${q.sequence}"></td>
+                            <td class="text-center" th:text="${q.bloc}"></td>
+                            <td class="text-center" th:text="${q.nbColis}"></td>
+                            <td class="text-center" th:text="${#numbers.formatDecimal(q.droitDouane,1,3)}"></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                    <table class="table">
+                        <thead>
+                        <th></th>
+                        <th></th>
+                        <th>Total colis</th>
+                        <th>Total montant</th>
+
+
+                        </thead>
+                        <tbody style="border:solid 2px">
+                        <tr style="border:solid 2px" class="fw-bold table-active">
+
+                            <td style="border:solid 2px" colspan="2" class="text-end" >Total </td>
+
+                            <td style="border:solid 2px" class="text-center" th:text="${nbTot}"></td>
+                            <td style="border:solid 2px" class="text-center" th:text="${#numbers.formatDecimal(douaneTot,1,3)}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer text-muted">
+                <a th:href="@{printquinzaine(date1=${date1},date2=${date2})}"  th:class="${results.size()>1?'btn btn-success':'d-none'}" >Imprimer </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

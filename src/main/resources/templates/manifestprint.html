@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Imprimer manifest</title>
+    <script>
+        window.onload = function(){
+        window.print();
+        }
+
+    </script>
+</head>
+<body>
+<div class="alert alert-primary text-center p-3 mb-4">
+    <h6 class="fw-bold mb-2">Agence Rapid Post Sfax ElBousten</h6>
+    <h4 class="m-0" th:text="'Manifeste des colis en douane : ' + ${date1}"></h4>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+    <th>Bloc</th>
+    <th>Num </th>
+    <th>Nb </th>
+    <th>P(Kg)</th>
+    <th>Dést</th>
+    <th>Orig</th>
+    <th>Observation</th>
+    </thead>
+    <tbody></tbody>
+    <tr th:each="douane,ind:${list}">
+        <td th:text="${douane.bloc}"></td>
+        <td th:text="${douane.numColis}"></td>
+        <td th:text="${douane.nbColis}"></td>
+        <td th:text="${douane.poid}"></td>
+        <td th:text="${douane.nom}"></td>
+        <td th:text="${douane.origin}"></td>
+        <td></td>
+    </tr>
+
+</table>
+</div>
+</body>
+</html>

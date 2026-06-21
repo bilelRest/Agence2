@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des B3</title>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container-fluid mt-3">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Gestion des B3</h2>
+            </div>
+
+        </div>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/dashb3}" method="get" class="row g-3">
+                    <!-- Date Range -->
+                    <div class="col-md-3">
+                        <label for="date1" class="form-label">Date début</label>
+                        <input  onblur="this.form.submit()" type="date" class="form-control" id="date1" name="date1"
+                               th:value="${date1}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date2" class="form-label">Date fin</label>
+                        <input  onblur="this.form.submit()" type="date" class="form-control" id="date2" name="date2"
+                               th:value="${date2}">
+                    </div>
+
+                    <!-- Destination -->
+                    <div class="col-md-3">
+                        <label for="dest" class="form-label">Bureau</label>
+                        <select onchange="this.form.submit()" class="form-select" id="dest" name="dest">
+                            <option th:value="${dest==''?'':dest}"  th:text="${dest==''?'Tous les bureaux':dest}"></option>
+<!--                            <option value="" th:selected="${dest}">Tous les bureaux</option>-->
+                            <option class="btn btn-primary" value="">Afficher tous</option>
+
+                            <option value="Agence">Agence</option>
+                            <option value="3000صفاقس">3000 - Sfax</option>
+                            <option value="3006مطار صفاقس">3006 - Sfax Aéroport</option>
+                            <option value="3007صفاقس مول">3007 - Sfax Mall</option>
+                            <option value="3010الحنشة">3010 - Hencha</option>
+                            <option value="3011ساقية الدائر">3011 - Sakiet Eddaier</option>
+                            <option value="3012مركز سحنون">3012 - Merkez Sahnoun</option>
+                            <option value="3013مركز قصاص">3013 - Merkez Kassas</option>
+                            <option value="3014بو تهدي">3014 - Bou Thedi</option>
+                            <option value="3015مليتة">3015 - Mellita</option>
+                            <option value="3016اللوزة">3016 - Louza</option>
+                            <option value="3020منزل الهادي شاكر">3020 - Menzel Hedi Chaker</option>
+                            <option value="3021ساقية الزيت">3021 - Sakiet Ezzit</option>
+                            <option value="3022مركز كمون">3022 - Merkez Kammoun</option>
+                            <option value="3023وادي الرمال">3023 - Oued Rmal</option>
+                            <option value="3024شعال">3024 - Chaal</option>
+                            <option value="3025أولاد قاسم">3025 - Ouled Kacem</option>
+                            <option value="3026حازق">3026 - Hazeg</option>
+                            <option value="3027صفاقس الجديدة">3027 - Sfax El Jadida</option>
+                            <option value="3030عقارب">3030 - Agareb</option>
+                            <option value="3031مركز بو عصيدة">3031 - Merkez Bou Assida</option>
+                            <option value="3032مركز درويش">3032 - Merkez Darouich</option>
+                            <option value="3033بئر صالح">3033 - Bir Salah</option>
+                            <option value="3034الغريبة">3034 - Ghraiba</option>
+                            <option value="3035العطايا">3035 - El Attaya</option>
+                            <option value="3036العامرة">3036 - El Aamra</option>
+                            <option value="3037قرقور">3037 - Gargour</option>
+                            <option value="3039قائد امحمد">3039 - Caid Mhamed</option>
+                            <option value="3040بئر علي بن خليفة">3040 - Bir Ali Ben Khalifa</option>
+                            <option value="3041مركز الشيحية">3041 - Merkez Chihya</option>
+                            <option value="3042العين">3042 - El Aïn</option>
+                            <option value="3043الغرابة">3043 - El Ghraba</option>
+                            <option value="3044نقة">3044 - Nakta</option>
+                            <option value="3045نجاة">3045 - Najet</option>
+                            <option value="3046السلام">3046 - Essalam</option>
+                            <option value="3047باب جبلي">3047 - Bab Jebli</option>
+                            <option value="3048سوق الفرياني">3048 - Souk Feriani</option>
+                            <option value="3049صفاقس المغرب العربي">3049 - Sfax Maghreb Arab</option>
+                            <option value="3050الصخيرة">3050 - Skhira</option>
+                            <option value="3051مركز العليا">3051 - Merkez El Alia</option>
+                            <option value="3052حي الحبيب">3052 - Cité El Habib</option>
+                            <option value="3053سيدي حسان بالحاج">3053 - Sidi Hsan Bel Hadj</option>
+                            <option value="3054مركز السبعي">3054 - Merkez Sebii</option>
+                            <option value="3055كراتن">3055 - Kraten</option>
+                            <option value="3056أولاد بوسمير">3056 - Ouled Bousmir</option>
+                            <option value="3057جبرنة">3057 - Jeberna</option>
+                            <option value="3059خزانة">3059 - Khazzanette</option>
+                            <option value="3060المحرس">3060 - Mahres</option>
+                            <option value="3061سيدي منصور">3061 - Sidi Mansour</option>
+                            <option value="3062سيدي عباس">3062 - Sidi Abbes</option>
+                            <option value="3063الخليج">3063 - Khalij</option>
+                            <option value="3064حي البحري">3064 - Cité Bahri</option>
+                            <option value="3065ميناء صفاقس">3065 - Sfax Port</option>
+                            <option value="3066سعدي">3066 - Saadi</option>
+                            <option value="3067مركز اللجمي">3067 - Merkez Lejmi</option>
+                            <option value="3069صفاقس حشاد">3069 - Sfax Hached</option>
+                            <option value="3070قرقنة">3070 - Kerkinah</option>
+                            <option value="3071وادي الشعبوني">3071 - Oued Chaabouni</option>
+                            <option value="3072مركز شاكر">3072 - Merkez Chaker</option>
+                            <option value="3073صبيح">3073 - Sbih</option>
+                            <option value="3074العوابد">3074 - El Aouebed</option>
+                            <option value="3075مركز الصغار">3075 - Merkez Essghar</option>
+                            <option value="3076مركز العلوي">3076 - Merkez Aloui</option>
+                            <option value="3077دوار لواطة">3077 - Douar Louata</option>
+                            <option value="3078حاجب">3078 - Hajeb</option>
+                            <option value="3079حي الخيري">3079 - Cité El Khiri</option>
+                            <option value="3080جبنيانة">3080 - Jbeniana</option>
+                            <option value="3081السلطانية">3081 - Essaltania</option>
+                            <option value="3082قندول">3082 - Guendoul</option>
+                            <option value="3083طينة">3083 - Tyna</option>
+                            <option value="3084طينة الجديدة">3084 - Nouvelle Tina</option>
+                            <option value="3085أم شوشة">3085 - Oum Choucha</option>
+                            <option value="3086أجنقة">3086 - Ajengua</option>
+                            <option value="3087بليانة">3087 - Biliana</option>
+                            <option value="3089صفاقس 15 نوفمبر">3089 - Sfax 15 Novembre</option>
+                            <option value="3090محرس مهرجان">3090 - Mahres Mahrajen</option>
+                            <option value="3091سيدي صالح">3091 - Sidi Salah</option>
+                            <option value="3092بوجربوع">3092 - Boujarbou</option>
+                            <option value="3093مركز الولي">3093 - Merkez Oueli</option>
+                            <option value="3094حي بورقيبة">3094 - Cité Bourguiba</option>
+                            <option value="3095ذراع بن زياد">3095 - Dhraa Ben Ziad</option>
+                            <option value="3097سيدي الظاهر">3097 - Sidi Dhahar</option>
+                            <option value="3099البستان">3099 - El Bousten</option>
+                        </select>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="col-md-3">
+                        <label for="key" class="form-label">Recherche</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="key" name="key"
+                                   placeholder="Numéro, Nom, Tél..." th:value="${key}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">Filtrer</button>
+                        <a th:href="@{/dashb3}" class="btn btn-secondary">Réinitialiser</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="card">
+            <h3  class="bg-info col-md-2 text-light" th:text="'Total: ' + ${totalItems}"></h3>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Numéro interne</th>
+                            <th>N° B3</th>
+                            <th>Date</th>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Destination</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${list}">
+                            <td th:text="${item.destination=='Agence'?item.idB3:''}"></td>
+                            <td th:text="${item.numB3}"></td>
+                            <td th:text="${item.dateNotif}"></td>
+                            <td th:text="${item.nom}"></td>
+                            <td th:text="${item.numTel}"></td>
+                            <td th:text="${item.destination}"></td>
+                            <td class="d-flex">
+                                <a  th:href="@{/sms(id=${item.idB3})}" title="Modifier" class="btn btn-success"><i class="bi bi-pen"></i> </a>
+                                <form th:action="@{/dashb3}" method="get">
+                                    <input type="hidden" name="id" th:value="${item.idB3}">
+
+                                    <input  type="hidden" name="date1"
+                                            th:value="${date1}">
+                                    <input  type="hidden" name="date2"
+                                            th:value="${date2}">
+                                    <input type="hidden" th:value="${dest}" name="dest">
+                                    <input type="hidden" th:value="${key}" name="key">
+                                <button style="margin-left:30%" onclick="return confirm('Etes vous sur de vouloir supprimer ce B3 ?')" title="Supprimer" class="btn btn-danger"><i class="bi bi-trash"></i> </button>
+                                </form>
+                            </td>
+<!--                            <td>-->
+<!--                                <a th:href="@{'/b3/' + ${item.id} + '/view'}" class="btn btn-sm btn-primary">-->
+<!--                                    <i class="bi bi-eye"></i>-->
+<!--                                </a>-->
+<!--                                <a th:if="${isAdmin}" th:href="@{'/b3/' + ${item.id} + '/edit'}" class="btn btn-sm btn-secondary">-->
+<!--                                    <i class="bi bi-pencil"></i>-->
+<!--                                </a>-->
+<!--                            </td>-->
+                        </tr>
+                        <tr th:if="${list.empty}">
+                            <td colspan="6" class="text-center">Aucun B3 trouvé</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:if="${totalPages > 1}" class="mt-3">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <!-- First Page -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/dashb3(page=0, size=${pageSize}, date1=${date1 != null ? date1.toString() : ''}, date2=${date2 != null ? date2.toString() : ''}, key=${key}, dest=${dest})}">
+                                    &laquo;
+                                </a>
+                            </li>
+
+                            <!-- Previous Page -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/dashb3(page=${currentPage - 1}, size=${pageSize}, date1=${date1 != null ? date1.toString() : ''}, date2=${date2 != null ? date2.toString() : ''}, key=${key}, dest=${dest})}">
+                                    &lsaquo;
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers - Simplified version -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(
+                (currentPage > 2 ? currentPage - 2 : 0),
+                (currentPage < totalPages - 3 ? currentPage + 2 : totalPages - 1)
+            )}" th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:href="@{/dashb3(page=${i}, size=${pageSize}, date1=${date1 != null ? date1.toString() : ''}, date2=${date2 != null ? date2.toString() : ''}, key=${key}, dest=${dest})}"
+                                   th:text="${i + 1}"></a>
+                            </li>
+
+                            <!-- Next Page -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/dashb3(page=${currentPage + 1}, size=${pageSize}, date1=${date1 != null ? date1.toString() : ''}, date2=${date2 != null ? date2.toString() : ''}, key=${key}, dest=${dest})}">
+                                    &rsaquo;
+                                </a>
+                            </li>
+
+                            <!-- Last Page -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/dashb3(page=${totalPages - 1}, size=${pageSize}, date1=${date1 != null ? date1.toString() : ''}, date2=${date2 != null ? date2.toString() : ''}, key=${key}, dest=${dest})}">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

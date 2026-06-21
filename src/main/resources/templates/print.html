@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Impression du Colis</title>
+</head>
+<body>
+<embed id="pdfEmbed" type="application/pdf" width="100%" height="600px"
+       th:src="'/reprintdelivered?colis=' + ${colis}" />
+
+<script>
+    function autoPrint() {
+        const pdfEmbed = document.getElementById('pdfEmbed');
+
+        // Vérifie si le PDF est chargé
+        pdfEmbed.onload = function () {
+            console.log('PDF loaded, printing now...');
+            pdfEmbed.contentWindow.print();  // Lance l'impression du PDF
+            setTimeout(function() {
+                window.close();  // Ferme l'onglet après un délai
+            }, 1000);  // Attendre 1 seconde avant de fermer l'onglet (pour que l'impression ait le temps de démarrer)
+        };
+    }
+
+    autoPrint();  // Appelle la fonction pour lancer l'impression et fermer l'onglet
+</script>
+
+</body>
+</html>

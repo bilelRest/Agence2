@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <title>Accueil - Plateforme Poste Sfax</title>
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #005BAE 0%, #003D7A 100%);
+            color: white;
+            padding: 2.5rem 0;
+        }
+
+        .feature-card {
+            transition: transform 0.3s;
+            border: none;
+            border-radius: 8px;
+            height: 100%;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            color: #005BAE;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .stats-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #005BAE;
+        }
+
+        .quick-action-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+    <script>
+        // Masquer automatiquement après 5 secondes (5000 ms)
+        setTimeout(function() {
+            const msg = document.getElementById('successMsg');
+            if (msg) {
+                msg.style.display = 'none';
+            }
+        }, 5000);
+    </script>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div th:if="${status}">
+        <div class="d-flex justify-content-center mt-3">
+            <div id="successMsg" class="alert alert-success text-center w-75 shadow-sm" style="transition: opacity 1s;">
+                ✅ Mot de passe mis à jour avec succès
+            </div>
+        </div>    </div>
+    <!-- Hero Section Compacte -->
+    <section class="hero-section mb-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-12 text-center">
+<!--                    <h3 class="fw-bold mb-2" th:text="'Bienvenue, '+${logged}+' !'"></h3>-->
+                    <h2  class="mb-3">Système De Gestion Interne Agence</h2>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="/b3consul" class="btn btn-warning quick-action-btn">
+                            <i class="bi bi-file-earmark-text me-1"></i> Rechercher B3
+                        </a>
+                        <a href="/dounecalc" class="btn btn-light quick-action-btn">
+                            <i class="bi bi-calculator-fill me-1"></i> Calcul Douane
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Compactes -->
+    <section class="mb-3">
+        <div class="container">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <a title="Rechercher B3 dans le retour" href="/avisconsul" class="feature-card card">
+                        <i class="bi bi-file-earmark-text feature-icon"></i>
+                        <h6>Consulter colis</h6>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a title="Calculer frais de douane" href="/dounecalc" class="feature-card card">
+                        <i class="bi bi-box-seam feature-icon"></i>
+                        <h6>Livraison colis</h6>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a title="Statistique douane"  href="/dashdouane" class="feature-card card">
+                        <i class="bi bi-graph-up feature-icon"></i>
+                        <h6>Tableaux de bord</h6>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Compactes -->
+
+
+    <!-- Actions Rapides Compactes -->
+    <section>
+        <div class="container">
+            <h6 class="fw-bold mb-2">Actions rapides</h6>
+            <div class="row g-2">
+                <div class="col-6 col-md-3">
+                    <a title="Nouveau avis" href="/avisedit"   style="background:MidnightBlue;color:white" class="btn  w-100 py-2">
+                        <i class="bi bi-file-earmark-plus"></i>Edition des avis
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a title="Envoie des sms" href="/sms"   style="background:blue;color:white"  class="btn  w-100 py-2">
+                        <i class="bi bi-chat-text"></i>Notifier B3
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a title="Réception B3 Retour" href="/retourb3rcp" style="background:DodgerBlue;color:white" class="btn w-100 py-2">
+                        <i class="bi bi-check-circle"></i>Réception retour B3
+                    </a>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <a title="Imprimer journée" href="/etatdouane" style="background:LightSkyBlue;color:gray" class="btn w-100 py-2">
+                        <i class="bi bi-file-bar-graph"></i>Etat de journée
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Animation compacte pour les stats
+    document.addEventListener('DOMContentLoaded', function() {
+        const statsNumbers = document.querySelectorAll('.stats-number');
+        statsNumbers.forEach(number => {
+            const target = parseInt(number.textContent);
+            number.textContent = target; // On enlève l'animation pour plus de sobriété
+        });
+    });
+</script>
+</body>
+</html>

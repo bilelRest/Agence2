@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Gestion des rôles</title>
+    <style>
+        .compact-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .compact-card .card-body {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .role-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin: 0;
+            padding: 0;
+        }
+        .role-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .compact-form {
+            margin-bottom: 10px;
+        }
+        .compact-form .form-control {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .compact-form .btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .alert-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <!-- Carte Sélection de rôle -->
+            <div class="col-md-4">
+                <div class="card shadow-sm compact-card">
+                    <div class="card-header bg-primary text-white py-2">
+                        <h6 class="mb-0"><i class="bi bi-person-gear me-1"></i>Gérer un rôle</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <form th:action="@{/role}" method="get" class="compact-form">
+                            <div class="mb-2">
+                                <label for="roleName" class="form-label small fw-bold">Sélectionner :</label>
+                                <select class="form-select form-select-sm" name="roleName" id="roleName" required>
+                                    <option th:each="r : ${roles}" th:value="${r.name}" th:text="${r.name}">Rôle</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-gear me-1"></i>Gérer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte Ajout de rôle -->
+            <div class="col-md-4">
+                <div class="card shadow-sm compact-card">
+                    <div class="card-header bg-warning text-dark py-2">
+                        <h6 class="mb-0"><i class="bi bi-plus-circle me-1"></i>Ajouter un rôle</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <form th:action="@{/addrole}" method="post" class="compact-form">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold">Nouveau rôle :</label>
+                                <div class="input-group">
+                                    <input type="text" name="role" class="form-control form-control-sm" placeholder="Nom" required>
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div th:if="${roleExist}" class="alert alert-danger alert-small py-1">
+                            <i class="bi bi-exclamation-triangle me-1"></i>Rôle existe déjà
+                        </div>
+                        <div th:if="${echec}" class="alert alert-danger alert-small py-1">
+                            <i class="bi bi-x-circle me-1"></i>Échec suppression
+                        </div>
+
+                        <h6 class="small fw-bold mt-2 mb-1">Liste des rôles :</h6>
+                        <ul class="role-list small">
+                            <li th:each="rol:${roles}">
+                                <span th:text="${rol.name}"></span>
+                                <a href="#" class="btn btn-outline-danger btn-xs p-0" style="width:20px;height:20px;">
+                                    <i class="bi bi-trash" style="font-size:0.7rem;"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte Modification utilisateur -->
+            <div class="col-md-4" th:if="${exist}">
+                <div class="card shadow-sm compact-card">
+                    <div class="card-header bg-info text-white py-2">
+                        <h6 class="mb-0"><i class="bi bi-person-lines-fill me-1"></i>Rôles de <span th:text="${selectedUser.username}"></span></h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <form method="post" th:action="@{/edituserrole}">
+                            <input type="hidden" name="id" th:value="${selectedUser.id}" />
+                            <div class="mb-2">
+                                <label class="small fw-bold">Attribuer des rôles :</label>
+                                <div style="max-height:120px;overflow-y:auto;" class="border p-2">
+                                    <div th:each="role : ${roles}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roleIds"
+                                               th:value="${role.id}"
+                                               th:checked="${selectedUser.roles.contains(role)}"
+                                               id="role-${role.id}">
+                                        <label class="form-check-label small" th:for="'role-' + ${role.id}">
+                                            <span th:text="${role.name}"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-info btn-sm w-100 mt-1">
+                                <i class="bi bi-check-circle me-1"></i>Mettre à jour
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

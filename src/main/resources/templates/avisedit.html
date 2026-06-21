@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Éditer avis</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 10;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        .action-buttons .btn {
+            padding: 0.25rem 0.5rem;
+            margin: 0 2px;
+        }
+        @media print {
+            .no-print, .action-column {
+                display: none !important;
+            }
+            body {
+                padding: 20px;
+                font-size: 12px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 4px 8px;
+                border: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('formEdit');
+            const button = document.getElementById('submitBtn');
+
+            button.addEventListener('click', function () {
+                if (form.checkValidity()) {
+                    let confirmation = confirm("Confirmer ajout du colis ?");
+                    if (confirmation) {
+                        form.submit();
+                    }
+                } else {
+                    form.reportValidity();
+                }
+            });
+
+            document.getElementById('poidColis').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+            });
+
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if(confirm("Voulez-vous vraiment supprimer ce colis ?")) {
+                        // Logique de suppression existante
+                    }
+                });
+            });
+        });
+function verif(input) {
+    const son = document.getElementById("sound-alert");
+    const valeur = input.value.trim();
+    const message = document.getElementById("spanInfo");
+
+    const alphaNumRegex = /^[a-zA-Z0-9]+$/;
+
+    if (valeur === "") {
+        return;
+    }
+
+    if (!alphaNumRegex.test(valeur)) {
+        son.play();
+        message.innerText = "Numéro invalide : " + valeur;
+        message.style.display = "block";
+        input.value = "";
+        setTimeout(() => input.focus(), 0);
+        return;
+    }
+
+    if (/^\d+$/.test(valeur)) {
+        if (valeur.length != 10) {
+            son.play();
+            message.innerText = "Numéro incorrect  : " + valeur;
+            message.style.display = "block";
+            input.value = "";
+            setTimeout(() => input.focus(), 0);
+            return;
+        }
+    } else if (!/^[a-zA-Z]{2}\d{9}[a-zA-Z]{2}$/.test(valeur)) {
+        son.play();
+        message.innerText = "Format alphanumérique invalide : " + valeur;
+        message.style.display = "block";
+        input.value = "";
+        setTimeout(() => input.focus(), 0);
+        return;
+    }
+
+    // ✅ Saisie correcte
+    message.style.display = "none";
+}
+
+    function updateBlocs(){
+    bloc=document.getElementById('blocs').value;
+    nb=document.getElementById('nbColis').value;
+    console.log('nombre '+nb);
+    console.log('num bloc '+bloc);
+
+var resultat = 'Bloc:' + bloc;
+for (var i = 1; i < parseInt(nb); i++) {
+    resultat += '-' + (parseInt(bloc) + parseInt(i));
+}
+document.getElementById('bloclist').innerHTML = resultat;    }
+</script>
+</head>
+<body>
+
+<div  layout:fragment="content1">
+    <audio id="sound-alert" src="/error.mp3" preload="auto"></audio>
+    <div class="container mt-4">
+        <input type="hidden" id="blocs"  th:value="${max}">
+        <h3 id="bloclist"></h3>
+
+        <div class="card shadow mb-4">
+            <div class="card-header text-center bg-primary text-white py-3">
+                <h4 class="mb-0">Édition des avis des colis sous douane</h4>
+            </div>
+            <div class="card-body">
+                <form id="formEdit" th:action="@{/addColis}" method="post">
+                    <input type="hidden" name="id"
+                           th:if="${douane != null and douane.idDouane != null}"
+                           th:value="${douane.idDouane}">
+                    <!-- Tous les champs sur une seule ligne -->
+                    <div class="row g-2 align-items-end mb-3">
+
+                        <!-- Numéro -->
+                        <div class="col-auto">
+                            <label for="numColis" class="form-label">Numéro</label>
+                            <input  onblur="verif(this)" type="text" style="width: 200px" class="form-control" th:value="${douane.numColis}" id="numColis" name="numColis" required>
+                        </div>
+                        <!-- Bloc -->
+                        <div class="col-auto">
+                            <label for="bloc" class="form-label">Bloc</label>
+                            <input th:value="${max}"  type="text" style="width: 80px" class="form-control" readonly id="bloc" name="bloc" required>
+                        </div>
+
+                        <!-- Nombre -->
+                        <div class="col-auto">
+                            <label for="nbColis" class="form-label">Nombre</label>
+                            <input onchange="updateBlocs()" th:value="${douane.nbColis}" min="1" type="number" style="width: 60px" class="form-control" id="nbColis"  name="nbColis" value="0" required>
+                        </div>
+
+                        <!-- Poids -->
+                        <div class="col-auto">
+                            <label for="poidColis" class="form-label">Poids (kg)</label>
+                            <input th:value="${douane.poid}" min="0.005" step="any"  type="number" style="width: 80px" class="form-control" id="poidColis" name="poidColis"  required>
+                        </div>
+
+                        <!-- Destinataire -->
+                        <div class="col-auto">
+                            <label for="nomDest" class="form-label">Destinataire</label>
+                            <input th:value="${douane.nom}" type="text" style="width: 300px" class="form-control" id="nomDest" name="nomDest" required>
+                        </div>
+
+                        <!-- Origine -->
+                        <div class="col-auto">
+                            <label for="origin" class="form-label">Origine</label>
+                            <input th:value="${douane.origin}" type="text" style="width: 100px" class="form-control" id="origin" name="origin" required>
+                        </div>
+
+                        <!-- Date arrivée -->
+                        <div class="col-auto">
+                            <label for="datear" class="form-label">Date arrivée</label>
+                            <input th:value="${date1}" type="date" style="width: 150px" class="form-control" id="datear" name="datear" value="2025-05-08">
+                        </div>
+
+                        <!-- Checkbox et bouton Ajouter -->
+                        <div class="col-auto d-flex align-items-end">
+                            <div class="form-check me-3">
+                                <input th:checked="${douane.observation=='Sans facture'}" class="form-check-input" type="checkbox" id="observation" name="observation">
+                                <label class="form-check-label" for="observation">Sans facture</label>
+                            </div>
+                            <button th:if="${edit==false}" type="submit" onclick="return confirm('Le nombre de pièces de ce colis est \n\n '+nbColis.value +'\n\n confirmer ?')" class="btn btn-success">Ajouter</button>
+                            <button th:if="${edit==true}" type="submit" class="btn btn-primary">Modifier</button>
+
+                        </div>
+                    </div>
+
+                    <!-- Bouton Annuler seul sur une ligne -->
+                    <div class="row">
+                        <div class="col-auto">
+                            <a href="/avisedit" class="btn btn-warning">Annuler</a>
+                        </div>
+                    </div>
+
+                    <!-- Messages d'état -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="bg-danger text-center text-light py-2" th:if="${exist}">
+                                Colis déjà existant
+                            </div>
+                            <div class="bg-success text-center text-light py-2" th:if="${success}">
+                                Ajouté avec succès
+                            </div>
+                            <div class="bg-danger text-center text-light py-2" th:if="${echec}">
+                                Echec de suppression contacter l'administrateur
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <h3 style="display:none" id="spanInfo" class="alert alert-danger" ></h3>
+
+        </div>
+    </div>
+
+        <!-- Tableau inchangé -->
+        <div class="card shadow">
+            <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Liste des colis enregistrés</h5>
+                <a id="printBtn" th:class="${colisList.isEmpty()?'btn btn-secondary disabled':'btn btn-secondary'}"
+                   th:href="@{/print-list}" target="_blank" onclick="setTimeout(() => window.location.reload(), 1000);" title="Imprimer la liste">
+                    <i class="bi bi-printer-fill"></i> Imprimer tout
+                </a>
+            </div>
+            <div class="card-body p-0 table-container">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="py-3">Numéro du colis</th>
+                        <th class="py-3">Bloc</th>
+                        <th class="py-3">Destinataire</th>
+                        <th class="py-3">Nombre</th>
+                        <th class="py-3">Poids (kg)</th>
+                        <th class="py-3">Origine</th>
+                        <th class="py-3">Observation</th>
+                        <th class="py-3">Utilisateur</th>
+                        <th class="py-3 action-column">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="col : ${colisList}">
+                        <td th:text="${col.numColis}" class="align-middle"></td>
+                        <td th:text="${col.bloc + '-' + (col.bloc + col.nbColis-1)}" class="align-middle"></td>
+                        <td th:text="${col.nom}" class="align-middle"></td>
+                        <td th:text="${col.nbColis}" class="align-middle text-center"></td>
+                        <td th:text="${col.poid}" class="align-middle "></td>
+                        <td th:text="${col.origin}" class="align-middle"></td>
+                        <td th:text="${col.observation}" class="align-middle"></td>
+                        <td th:text="${col.getAppUser().getUsername()}"></td>
+                        <td style="display:flex">
+                            <a th:href="@{/avisedit(id=${col.idDouane})}" class="btn btn-primary btn-edit" title="Modifier ce colis">
+                                <i class="bi bi-pen-fill"></i>
+                            </a>
+                            <a style="margin-left:30%"
+                               target="_blank"
+                               class="btn btn-success btn-print"
+                               th:href="@{/print-list(id=${col.idDouane})}"
+                               onclick="if (confirm('Êtes-vous sûr de vouloir imprimer ce colis ?')) { setTimeout(() => window.location.reload(), 1000); } else { return false; }"
+                               title="Imprimer ce colis">
+                                <i class="bi bi-printer-fill"></i>
+                            </a>
+
+
+                            <form th:action="@{/delete}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce colis ?');">
+                                <input type="hidden" name="id" th:value="${col.idDouane}">
+                                <button style="margin-left:60%" type="submit" class="btn btn-danger" title="Supprimer ce colis">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                    <tr th:if="${colisList.empty}">
+                        <td colspan="6" class="text-center py-4 text-muted">Aucun colis enregistré</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

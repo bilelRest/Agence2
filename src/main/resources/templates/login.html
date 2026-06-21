@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Rapid Post Sfax ElBousten | Poste Tunisienne</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --poste-orange: #F39200;
+            --poste-blue: #0054A6;
+            --poste-blue-light: #E6F0FA;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--poste-blue) 0%, #003b7a 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--poste-orange);
+        }
+
+        .hierarchy {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .agency-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: white;
+        }
+
+        .system-name {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .card-body {
+            padding: 2rem;
+            background-color: white;
+        }
+
+        .form-control {
+            border-radius: 6px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--poste-orange);
+            box-shadow: 0 0 0 0.2rem rgba(243, 146, 0, 0.15);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--poste-blue);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-login {
+            background-color: var(--poste-blue);
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-login:hover {
+            background-color: #00458f;
+            transform: translateY(-1px);
+        }
+
+        .poste-logo {
+            height: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .input-icon {
+            color: var(--poste-orange);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="login-container">
+            <div class="card login-card">
+                <div class="card-header">
+                    <div class="hierarchy">
+                       La Poste Tunisienne
+                    </div>
+                    <div class="agency-name">Rapid Post Sfax ElBousten</div>
+                    <div class="system-name">Système De Gestion Interne</div>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/login}" method="post">
+                        <!-- Username input -->
+                        <div class="mb-4">
+                            <label for="username" class="form-label">Identifiant</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="bi bi-person input-icon"></i>
+                                </span>
+                                <input type="text" id="username" name="username" class="form-control" placeholder="Nom d'utilisateur" required>
+                            </div>
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="bi bi-lock input-icon"></i>
+                                </span>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Mot de passe " required>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Submit button -->
+                        <button type="submit" class="btn btn-login mb-3">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Connexion
+                        </button>
+                    </form>
+
+                    <div class="footer-text">
+                        © 2025 La Poste Tunisienne - Agence Rapid Post Sfax ElBousten<br>
+                        Version 1.0.0
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

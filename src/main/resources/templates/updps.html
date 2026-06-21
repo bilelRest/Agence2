@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changer mot de passe</title>
+</head>
+<body>
+<div layout:fragment="content1">
+    <h2 th:text="${logged}"></h2>
+    <span th:if="${status==false}">Mot de passe et/ou login incorrect </span>
+    <form th:action="@{/updatepwd}" method="post">
+    <label for="pwd">Mot de passe actuel</label>
+    <input id="pwd" type="password" name="password" placeholder="Mot de passe actuelle">
+    <label for="newpwd">Nouvelle mot de passe</label>
+    <input id="newpwd" type="password" name="newpwd">
+    <label for="confpwd">Confirmer le nouveau mot de passe</label>
+    <input id="confpwd" type="password" >
+        <button type="submit" class="btn btn-success">Modifier</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Envoi de SMS</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const dest=document.getElementById('post1');
+          const input = document.getElementById('dateInput');
+          const message = document.getElementById('message');
+          const divDate=document.getElementById('divDate');
+dest.addEventListener('change', function () {
+  if (dest.value === "Agence") {
+    divDate.style.visibility = "hidden"; // Correction ici
+  } else {
+    divDate.style.visibility = "visible"; // Pour le réafficher si besoin
+  }
+});
+
+
+
+          input.addEventListener('input', function () {
+            const selectedDate = new Date(this.value);
+                        const day = selectedDate.getDay();
+
+const [annee, mois, jour] = input.value.split("-");
+
+if (
+  (mois === "01" && jour === "01") ||
+  (mois === "03" && jour === "20") ||
+  (mois === "04" && jour === "09") ||
+  (mois === "05" && jour === "01") ||
+  (mois === "07" && jour === "25") ||
+  (mois === "08" && jour === "13") ||
+  (mois === "10" && jour === "15") ||
+  (mois === "12" && jour === "17")
+) {
+  message.textContent = "Vous ne pouvez pas choisir un jour férié.";
+  input.value = '';
+} else if (day === 0 || day === 6) {
+              message.textContent = "Vous ne pouvez pas choisir un samedi ou un dimanche.";
+              this.value = '';
+            } else {
+              message.textContent = '';
+            }
+          });
+        });
+    </script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            zoom: 90%;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .status-message {
+            transition: all 0.3s ease;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-buttons .btn {
+            margin: 0 3px;
+            min-width: 30px;
+        }
+
+        .counter-display {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .counter-display label {
+            font-weight: 500;
+            margin-right: 15px;
+        }
+
+        .counter-display .value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 5px 10px;
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon i {
+            margin-right: 5px;
+        }
+
+        .input-group-text {
+            background-color: #e9ecef;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-section {
+                padding: 10px;
+            }
+
+            .counter-display {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .counter-display label {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container py-4">
+        <!-- Alertes système -->
+        <div th:if="${exist}" class="alert alert-warning alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Attention !</strong> Ce numéro existe déjà dans notre système.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div th:if="${forfait}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+            <strong>Urgent !</strong> Votre forfait SMS est épuisé. Veuillez recharger.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Section 1 : Configuration du serveur -->
+        <!-- Section 1 : Configuration du serveur -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-server me-2"></i>Configuration du serveur SMS
+                    </h5>
+                    <span class="badge bg-light text-dark">
+                <i class="bi bi-info-circle me-1"></i>Configuration requise
+            </span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-3 align-items-center">
+                    <!-- Compteur SMS - Colonne gauche avec fond bleu -->
+                    <div class="col-md-6">
+                        <div class="counter-display p-3 rounded" style="background-color: #e7f5ff; border-left: 4px solid #228be6;">
+                            <h6 class="fw-bold mb-3 text-primary">
+                                <i class="bi bi-calculator me-2"></i>Compteur SMS
+                            </h6>
+                            <div class="d-flex flex-wrap align-items-center">
+                                <div class="me-4 mb-2">
+                                    <label class="text-muted">SMS envoyés :</label>
+<!--                                    <span class="value fw-bold" ></span>-->
+                                    <a th:text="${counter.getCounter()}" class="btn btn-warning" th:href="@{sms?raz=true}" title="Cliquer pour mettre à zéro le compteur des sms envoyé">
+                                    </a>
+                                </div>
+                                <div class="me-4 mb-2">
+                                    <label class="text-muted">SMS disponibles :</label>
+                                    <span class="value fw-bold" th:text="${counter.getValeur()}"></span>
+                                </div>
+                                <form th:action="@{/sms}" method="get" class="d-flex align-items-center mb-2">
+                                    <div class="input-group me-2" style="width: 200px;">
+
+                                </span>
+                                        <input type="number" class="form-control" placeholder="Nouveau forfait"
+                                               name="reset" th:value="${counter.getValeur()}">
+                                    </div>
+                                    <button type="submit" title="Cliquer mettre à jour le forfait sms" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-arrow-repeat me-1"></i>Mettre à jour
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration IP - Colonne droite avec fond vert -->
+                    <div class="col-md-6">
+                        <div class="p-3 rounded" style="background-color: #ebfbee; border-left: 4px solid #2b8a3e;">
+                            <h6 class="fw-bold mb-3 text-success">
+                                <i class="bi bi-ethernet me-2"></i>Paramètres réseau
+                            </h6>
+                            <form th:action="@{/sms}" method="GET" class="row g-2 align-items-end">
+                                <div class="col-8">
+                                    <label for="ipad" class="form-label small text-muted">Adresse IP du serveur SMS</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-success text-white"><i class="bi bi-router"></i></span>
+                                        <input type="text" class="form-control" id="ipad" name="ipad"
+                                               th:value="${ipad}" required>
+                                    </div>
+                                    <small class="text-muted">Format: IP (ex: 192.168.1.100)</small>
+                                </div>
+                                <div class="col-4">
+                                    <button type="submit" class="btn btn-success w-100 btn-sm btn-icon">
+                                        <i class="bi bi-check-circle me-1"></i>Appliquer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2 : Envoi de SMS -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-send-fill me-2"></i>Envoyer un SMS
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <form th:action="@{/sms}" method="POST">
+                    <input type="hidden" name="id" th:value="${b3mod.idB3}" />
+                    <input type="hidden" name="ipad" th:value="${ipad}" />
+
+                    <div class="row g-3 mb-4">
+                        <!-- Référence -->
+                        <div class="col-md-3">
+                            <label for="ref" class="form-label required-field">Référence</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                <input type="text" class="form-control" id="ref" placeholder="Scanner référence"
+                                       name="ref" th:value="${b3mod.numB3}" required>
+                            </div>
+                        </div>
+
+                        <!-- Nom -->
+                        <div class="col-md-3">
+                            <label for="nom" class="form-label required-field">Destinataire</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="nom" placeholder="Nom complet"
+                                       name="nom" th:value="${b3mod.nom}" required>
+                            </div>
+                        </div>
+
+                        <!-- Téléphone -->
+                        <div class="col-md-2">
+                            <label for="tel" class="form-label required-field">Téléphone</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                <input type="tel" class="form-control" id="tel" placeholder="8 chiffres"
+                                       name="tel" th:value="${b3mod.numTel}" pattern="[0-9]{8}" required>
+                            </div>
+                        </div>
+
+                        <!-- Bureau -->
+                        <div class="col-md-2">
+                            <label for="post1" class="form-label required-field">Bureau</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                <select class="form-select" id="post1" name="post" th:value="${b3mod.destination}">
+                                    <option value="Agence">Agence</option>
+                                    <option value="3000صفاقس">3000 - Sfax</option>
+                                    <option value="3006مطار صفاقس">3006 - Sfax Aéroport</option>
+                                    <option value="3007صفاقس مول">3007 - Sfax Mall</option>
+                                    <option value="3010الحنشة">3010 - Hencha</option>
+                                    <option value="3011ساقية الدائر">3011 - Sakiet Eddaier</option>
+                                    <option value="3012مركز سحنون">3012 - Merkez Sahnoun</option>
+                                    <option value="3013مركز قصاص">3013 - Merkez Kassas</option>
+                                    <option value="3014بو تهدي">3014 - Bou Thedi</option>
+                                    <option value="3015مليتة">3015 - Mellita</option>
+                                    <option value="3016اللوزة">3016 - Louza</option>
+                                    <option value="3020منزل الهادي شاكر">3020 - Menzel Hedi Chaker</option>
+                                    <option value="3021ساقية الزيت">3021 - Sakiet Ezzit</option>
+                                    <option value="3022مركز كمون">3022 - Merkez Kammoun</option>
+                                    <option value="3023وادي الرمال">3023 - Oued Rmal</option>
+                                    <option value="3024شعال">3024 - Chaal</option>
+                                    <option value="3025أولاد قاسم">3025 - Ouled Kacem</option>
+                                    <option value="3026حازق">3026 - Hazeg</option>
+                                    <option value="3027صفاقس الجديدة">3027 - Sfax El Jadida</option>
+                                    <option value="3030عقارب">3030 - Agareb</option>
+                                    <option value="3031مركز بو عصيدة">3031 - Merkez Bou Assida</option>
+                                    <option value="3032مركز درويش">3032 - Merkez Darouich</option>
+                                    <option value="3033بئر صالح">3033 - Bir Salah</option>
+                                    <option value="3034الغريبة">3034 - Ghraiba</option>
+                                    <option value="3035العطايا">3035 - El Attaya</option>
+                                    <option value="3036العامرة">3036 - El Aamra</option>
+                                    <option value="3037قرقور">3037 - Gargour</option>
+                                    <option value="3039قائد امحمد">3039 - Caid Mhamed</option>
+                                    <option value="3040بئر علي بن خليفة">3040 - Bir Ali Ben Khalifa</option>
+                                    <option value="3041مركز الشيحية">3041 - Merkez Chihya</option>
+                                    <option value="3042العين">3042 - El Aïn</option>
+                                    <option value="3043الغرابة">3043 - El Ghraba</option>
+                                    <option value="3044نقة">3044 - Nakta</option>
+                                    <option value="3045نجاة">3045 - Najet</option>
+                                    <option value="3046السلام">3046 - Essalam</option>
+                                    <option value="3047باب جبلي">3047 - Bab Jebli</option>
+                                    <option value="3048سوق الفرياني">3048 - Souk Feriani</option>
+                                    <option value="3049صفاقس المغرب العربي">3049 - Sfax Maghreb Arab</option>
+                                    <option value="3050الصخيرة">3050 - Skhira</option>
+                                    <option value="3051مركز العليا">3051 - Merkez El Alia</option>
+                                    <option value="3052حي الحبيب">3052 - Cité El Habib</option>
+                                    <option value="3053سيدي حسان بالحاج">3053 - Sidi Hsan Bel Hadj</option>
+                                    <option value="3054مركز السبعي">3054 - Merkez Sebii</option>
+                                    <option value="3055كراتن">3055 - Kraten</option>
+                                    <option value="3056أولاد بوسمير">3056 - Ouled Bousmir</option>
+                                    <option value="3057جبرنة">3057 - Jeberna</option>
+                                    <option value="3059خزانة">3059 - Khazzanette</option>
+                                    <option value="3060المحرس">3060 - Mahres</option>
+                                    <option value="3061سيدي منصور">3061 - Sidi Mansour</option>
+                                    <option value="3062سيدي عباس">3062 - Sidi Abbes</option>
+                                    <option value="3063الخليج">3063 - Khalij</option>
+                                    <option value="3064حي البحري">3064 - Cité Bahri</option>
+                                    <option value="3065ميناء صفاقس">3065 - Sfax Port</option>
+                                    <option value="3066سعدي">3066 - Saadi</option>
+                                    <option value="3067مركز اللجمي">3067 - Merkez Lejmi</option>
+                                    <option value="3069صفاقس حشاد">3069 - Sfax Hached</option>
+                                    <option value="3070قرقنة">3070 - Kerkinah</option>
+                                    <option value="3071وادي الشعبوني">3071 - Oued Chaabouni</option>
+                                    <option value="3072مركز شاكر">3072 - Merkez Chaker</option>
+                                    <option value="3073صبيح">3073 - Sbih</option>
+                                    <option value="3074العوابد">3074 - El Aouebed</option>
+                                    <option value="3075مركز الصغار">3075 - Merkez Essghar</option>
+                                    <option value="3076مركز العلوي">3076 - Merkez Aloui</option>
+                                    <option value="3077دوار لواطة">3077 - Douar Louata</option>
+                                    <option value="3078حاجب">3078 - Hajeb</option>
+                                    <option value="3079حي الخيري">3079 - Cité El Khiri</option>
+                                    <option value="3080جبنيانة">3080 - Jbeniana</option>
+                                    <option value="3081السلطانية">3081 - Essaltania</option>
+                                    <option value="3082قندول">3082 - Guendoul</option>
+                                    <option value="3083طينة">3083 - Tyna</option>
+                                    <option value="3084طينة الجديدة">3084 - Nouvelle Tina</option>
+                                    <option value="3085أم شوشة">3085 - Oum Choucha</option>
+                                    <option value="3086أجنقة">3086 - Ajengua</option>
+                                    <option value="3087بليانة">3087 - Biliana</option>
+                                    <option value="3089صفاقس 15 نوفمبر">3089 - Sfax 15 Novembre</option>
+                                    <option value="3090محرس مهرجان">3090 - Mahres Mahrajen</option>
+                                    <option value="3091سيدي صالح">3091 - Sidi Salah</option>
+                                    <option value="3092بوجربوع">3092 - Boujarbou</option>
+                                    <option value="3093مركز الولي">3093 - Merkez Oueli</option>
+                                    <option value="3094حي بورقيبة">3094 - Cité Bourguiba</option>
+                                    <option value="3095ذراع بن زياد">3095 - Dhraa Ben Ziad</option>
+                                    <option value="3097سيدي الظاهر">3097 - Sidi Dhahar</option>
+                                    <option value="3099البستان">3099 - El Bousten</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="divDate" style="visibility:hidden" class="col-md-2">
+                            <label for="dateInput" class="form-label required-field">Date</label>
+                            <div class="input-group">
+                                <input   type="date" class="form-control" required id="dateInput"
+                                       name="date" th:value="${date}" >
+                                <p id="message" style="color: red; font-weight: bold;"></p>
+                            </div>
+                        </div>
+
+                        <!-- Bouton d'envoi -->
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100 btn-icon">
+                                <i class="bi bi-send-fill me-1"></i> Envoyer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback message -->
+                    <div th:if="${status != null}" class="mt-3">
+                        <div th:classappend="${status} ? 'alert alert-success' : 'alert alert-danger'">
+                            <div class="d-flex align-items-center">
+                                <i th:class="${status} ? 'bi bi-check-circle-fill me-2' : 'bi bi-x-circle-fill me-2'"></i>
+                                <div>
+                                    <span th:if="${status}">SMS envoyé avec succès. Numéro accordé : <strong th:text="${id}"></strong></span>
+                                    <span th:if="${!status}">
+                                        <strong>Échec d'envoi !</strong> Causes possibles :
+                                        <ul class="mb-0 mt-2">
+                                            <li>Démarrer l'application smsserv et vérifier l'adresse IP affichée</li>
+                                            <li>Vérifier la configuration du serveur SMS</li>
+                                            <li>Si le problème persiste, contacter l'administrateur</li>
+                                        </ul>
+                                        <div class="mt-2">Numéro interne : <strong th:text="${id}"></strong></div>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${echec}" class="alert alert-danger mt-3">
+                        <i class="bi bi-x-circle-fill me-2"></i>
+                        <strong>Échec de suppression !</strong> Erreur inconnue. Veuillez réessayer ou contacter l'administrateur.
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section 3 : Historique des SMS -->
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Historique des SMS
+                    </h5>
+                    <span class="badge bg-light text-dark" th:text="'Total : ' + ${b3List.size()}"></span>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>#ID</th>
+                            <th>Référence</th>
+                            <th>Contact</th>
+                            <th>Date</th>
+                            <th>Destinataire</th>
+                            <th>Bureau</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="b3 : ${b3List}">
+                            <td th:text="${b3.idB3}"></td>
+                            <td th:text="${b3.numB3}"></td>
+                            <td th:text="${b3.numTel}"></td>
+                            <td th:text="${#temporals.format(b3.dateNotif, 'dd/MM/yy HH:mm')}"></td>
+                            <td th:text="${b3.nom}"></td>
+                            <td>
+                                <span class="badge bg-light text-dark" th:text="${b3.destination}"></span>
+                            </td>
+                            <td>
+                                    <span th:class="${b3.notified} ? 'badge bg-success' : 'badge bg-danger'"
+                                          th:text="${b3.notified} ? 'Envoyé' : 'Échec'"></span>
+                            </td>
+                            <td class="text-end action-buttons">
+                                <!-- Renvoi SMS -->
+                                <form th:if="${!b3.notified}" th:action="@{/sms}" method="post" class="d-inline">
+                                    <input type="hidden" name="tel" th:value="${b3.numTel}">
+                                    <input type="hidden" name="ref" th:value="${b3.numB3}">
+                                    <input type="hidden" name="post" th:value="${b3.destination}">
+                                    <input type="hidden" name="resend" value="true">
+                                    <input type="hidden" name="ipad" th:value="${ipad}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Renvoyer">
+                                        <i class="bi bi-send"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Modification -->
+                                <a th:href="@{/sms(id=${b3.idB3}, ipad=${ipad})}"
+                                   class="btn btn-sm btn-outline-success" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <!-- Suppression -->
+                                <form th:action="@{/deletesms}" method="post" class="d-inline">
+                                    <input type="hidden" name="id" th:value="${b3.idB3}">
+                                    <button type="submit"
+                                            onclick="return confirm('Confirmer la suppression de ce SMS ?')"
+                                            class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

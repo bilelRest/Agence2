@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul des frais de dédouanement</title>
+    <style>
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="content1">
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0"><i class="bi bi-calculator"></i> Calcul des frais de dédouanement</h2>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Formulaire de recherche -->
+                <form th:action="@{/dounecalc}" method="get" class="mb-4">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-8">
+                            <label for="colis" class="form-label fw-bold">Référence du colis</label>
+                            <input onchange="this.form.submit()" type="text" class="form-control" id="colis" name="colis"
+                                   placeholder="Scanner le code-barres" required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> Rechercher
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Messages d'état -->
+                <div th:if="${empty}" class="alert alert-warning">
+                    <audio  src="/empty.mp3" autoplay preload="auto"></audio>
+
+                    <h6 th:text="'Aucun colis trouvé avec cette référence : '+${param.colis}"></h6>
+                </div>
+                <div class="col">
+                    <div th:if="${exist}" class="alert alert-danger d-flex justify-content-between align-items-center">
+                        <span>Colis déjà livré.</span>
+                        <div th:if="${colis==true}">
+                            <a title="Nouvelle opération" th:href="@{dounecalc}" class="btn btn-light btn-sm"><i class="bi bi-plus"></i> New</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="container" th:if="${notPrinted}">
+                    <h5>Non imprimé</h5>
+                    <a th:href="@{/setprinted(id=${douane.idDouane})}" class="btn btn-warning">Marquer comme imprimé</a>
+                </div>
+
+                <!-- Détails du colis -->
+                <div th:if="${douane != null }" class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title text-info mb-4"><i class="bi bi-box-seam"></i> Détails du colis</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Référence</label>
+                                    <input th:value="${douane.numColis}" class="form-control" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Date d'arrivée</label>
+                                    <input th:value="${douane.dateArrivee}" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Quantité</label>
+                                    <input th:value="${douane.nbColis}" class="form-control" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Jours en stock</label>
+                                    <input th:value="${daysBetween}" class="form-control" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${notPrinted == false}" class="card-body">
+                        <form method="get" th:action="@{/dounecalc}">
+                            <input type="hidden" name="colis" th:value="${douane.numColis}">
+                            <div class="row g-3">
+                                <!-- Numéro de séquence -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="sequence" class="form-label fw-bold">Numéro de séquence</label>
+                                    <input type="number"
+                                           max="99999"
+                                           min="1"
+                                           id="sequence"
+                                           name="sequence"
+                                           th:value="${douane.sequence}"
+                                           th:readonly="${exist}"
+                                           class="form-control"
+                                           th:classappend="${notValidated} ? ' is-invalid bg-warning' : ''"
+                                           placeholder="Entrer le numéro de séquence"
+                                           required>
+                                    <div class="invalid-feedback" th:if="${notValidated}">
+                                        <audio  src="/error.mp3" autoplay preload="auto"></audio>
+
+                                        Numéro de séquence existant ou invalide.
+                                    </div>
+                                </div>
+
+                                <!-- Frais de douane -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Frais de douane (TND)</label>
+                                    <input type="number"
+                                           id="droit"
+                                           name="droit"
+                                           step="0.001"
+                                           th:value="${douane.droitDouane}"
+                                           th:readonly="${exist}"
+                                           class="form-control"
+                                           required>
+                                </div>
+
+                                <!-- Boutons -->
+                                <div class="col-md-4 mb-3 d-flex align-items-end">
+                                    <button type="submit"
+                                            th:class="${exist ? 'd-none' : 'btn btn-primary w-100'}">
+                                        <i class="bi bi-calculator"></i> Calculer
+                                    </button>
+                                    <div th:if="${validated==true or exist==true}" class="ms-3">
+                                        <a target="_blank"
+                                           class="btn btn-warning"
+                                           style="width:150px"
+                                           th:href="@{print-sortie(colis=${douane.numColis})}"
+                                           onclick="setTimeout(() => window.location.reload(), 3000);">
+                                            <i class="bi bi-printer"></i>
+                                            <span th:text="${exist ? 'Imprimer' : 'Valider'}"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Résultat du calcul -->
+                            <div th:if="${douane.totPayer != 0}" class="mt-4 text-center">
+                                <div class="display-5 fw-bold text-primary">
+                                    Total à payer :
+                                    <span id="total"
+                                          th:text="${#numbers.formatDecimal(douane.totPayer, 1, 3, 'POINT')}"></span> TND
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div> <!-- Fin bloc douane -->
+            </div> <!-- Fin card-body -->
+        </div> <!-- Fin card -->
+    </div> <!-- Fin container -->
+</div> <!-- Fin layout fragment -->
+</body>
+</html>

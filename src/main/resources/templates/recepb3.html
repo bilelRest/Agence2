@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <title>Réception Bulletin N°3 : Retour</title>
+    <style>
+        .card {
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .compact-alert {
+            padding: 0.75rem 1rem;
+            margin-top: 1rem;
+        }
+        .input-group-text {
+            min-width: 42px;
+            justify-content: center;
+        }
+        .form-section {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white py-2">
+                <h1 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Retour Bulletin N°3 : Réception</h1>
+            </div>
+
+            <div class="card-body">
+                <!-- Formulaire de recherche -->
+                <div class="form-section">
+                    <form th:action="@{/retourb3rcp}" method="get">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label for="numb3" class="form-label  mb-1">Numéro du B3</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                    <input type="text" class="form-control form-control-sm" id="numb3" name="numb3"
+                                           required placeholder="EAxxxxxxxxxTN" th:value="${num}">
+                                </div>
+                            </div>
+
+                            <div th:if="${nob3}" class="col-md-5">
+                                <label for="name" class="form-label small mb-1">Nom du destinataire</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control form-control-sm" id="name" name="name"
+                                           required placeholder="Nom ou prénom">
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-sm btn-success w-100">
+                                    <i class="bi bi-search me-1"></i>
+                                    <span th:text="${nob3} ? 'Ajouter' : 'Rechercher'"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Messages d'état compacts -->
+                <div th:if="${exist}" class="alert alert-warning compact-alert d-flex align-items-center py-2">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div class="small">Ce Bulletin N°3 existe déjà dans le système</div>
+                </div>
+
+                <div th:if="${nob3}">
+                    <div class="bg-light p-2 mb-2 small rounded">
+                        <span class="fw-bold">Numéro saisi :</span>
+                        <span th:text="${num}" class="text-primary ms-2"></span>
+                    </div>
+                    <div class="alert alert-warning compact-alert d-flex align-items-center py-2">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div class="small">
+                            Ce Bulletin N°3 n'existe pas dans les B3 envoyés.
+                            <span th:if="${nob3}">Pour l'ajouter manuellement, complétez les champs ci-dessus.</span>
+                            <a class="btn btn-sm btn-outline-warning ms-2 py-0" href="retourb3rcp">
+                                <i class="bi bi-x"></i> Annuler
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${success}" class="alert alert-success compact-alert d-flex align-items-center py-2">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <div class="small">
+                        Bulletin N°3 ajouté avec succès -
+                        <span class="fw-bold">N° interne : <span th:text="${id}" class="text-dark"></span></span>
+                    </div>
+                </div>
+
+                <!-- Tableau des résultats -->
+                <div th:if="${!#lists.isEmpty(results)}" class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 text-muted">Bulletins retournés</h6>
+                        <span class="badge bg-primary small">
+                            <span th:text="${#lists.size(results)}"></span> résultat(s)
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover small">
+                            <thead class="table-light">
+                            <tr>
+                                <th scope="col">N° interne</th>
+                                <th scope="col">N° de suivi</th>
+                                <th scope="col">Destinataire</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="col:${results}">
+                                <td th:text="${col.id}" class="fw-bold"></td>
+                                <td th:text="${col.numB3}"></td>
+                                <td th:text="${col.nomPrenB3Ro}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light py-2">
+                <small class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i> Système de gestion B3 -
+                    <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
