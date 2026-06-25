@@ -205,7 +205,7 @@ public class Dashboard {
             @RequestParam("numColis") String numColis,
             @RequestParam("bloc") String bloc,
             @RequestParam("dateArrivee")  LocalDate dateArrivee,
-            @RequestParam( "dateSortie")  LocalDate dateSortie,
+            @RequestParam( value = "dateSortie",required = false)  LocalDate dateSortie,
             @RequestParam("origin") String origin,
             @RequestParam("nom") String nom,
             @RequestParam("poid") String poid,
