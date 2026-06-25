@@ -20,9 +20,12 @@ public interface douaneRepo extends JpaRepository<Douane,Long> {
     List<Douane> findBetweenDatesDash(@Param("date1") LocalDate startDate,@Param("date2") LocalDate endDate);
 
     List<Douane> findByPrintedFalse();
-
-    Douane findByNumColisIgnoreCase(String num);
-
+    @Query(value = "SELECT * FROM douane d WHERE " +
+            "d.num_colis = :key OR " +
+            "( :key ~ '^[0-9]+$' AND CAST(:key AS BIGINT) BETWEEN d.bloc AND d.bloc_fin )",
+            nativeQuery = true)
+    List<Douane> findByNumColisIgnoreCase1(@Param("key") String key);
+Douane findByNumColisIgnoreCase(@Param("key") String key);
     Douane findByBloc(Long bloc);
 
     List<Douane> findByDeliveredTrue();
@@ -31,20 +34,19 @@ public interface douaneRepo extends JpaRepository<Douane,Long> {
     List<Douane> findBySequence(String sequence);
 
 
+    // 1. Correction de searchMultiFields
     @Query("SELECT d FROM Douane d WHERE " +
-            "LOWER(d.numColis) LIKE :key OR " +
-            "LOWER(d.nom) LIKE :key OR " +
-            "CAST(d.sequence AS string) LIKE :key OR " +
-            "d.bloc = :key")
+            "(CONCAT('', d.numColis) = :key OR CONCAT('', d.bloc) = :key) " +
+            "OR (LOWER(d.nom) LIKE LOWER(CONCAT('%', :key, '%')))")
     Page<Douane> searchMultiFields(@Param("key") String key, Pageable pageable);
 
+    // 2. Correction de searchMultiFieldsByDelivered
     @Query("SELECT d FROM Douane d WHERE d.delivered = :etat AND (" +
-            "LOWER(d.numColis) LIKE :key OR " +
-            "LOWER(d.nom) LIKE :key OR " +
-            "CAST(d.sequence AS string) LIKE :key OR " +
-            "d.bloc = :key)")
+            "LOWER(d.numColis) LIKE LOWER(CONCAT('%', :key, '%')) OR " +
+            "LOWER(d.nom) LIKE LOWER(CONCAT('%', :key, '%')) OR " +
+            "CONCAT('', d.sequence) LIKE CONCAT('%', :key, '%') OR " +
+            "CONCAT('', d.bloc) LIKE CONCAT('%', :key, '%'))")
     Page<Douane> searchMultiFieldsByDelivered(@Param("key") String key, @Param("etat") boolean etat, Pageable pageable);
-
     @Query("SELECT d FROM Douane d WHERE d.dateArrivee BETWEEN :date1 AND :date2")
     Page<Douane> findBetweenDates(@Param("date1") LocalDate date1, @Param("date2") LocalDate date2, Pageable pageable);
 
@@ -54,19 +56,28 @@ public interface douaneRepo extends JpaRepository<Douane,Long> {
     List<Douane> findBetweenDatesByEtatUser(@Param("date1") LocalDate date1, @Param("date2") LocalDate date2, @Param("etat") boolean etat,@Param("id")long id);
 
     @Query("SELECT d FROM Douane d WHERE d.dateArrivee BETWEEN :date1 AND :date2 AND (" +
-            "LOWER(d.numColis) LIKE :key OR " +
-            "LOWER(d.nom) LIKE :key OR " +
-            "CAST(d.sequence AS string) LIKE :key OR " +
-            "d.bloc = :key)")
-    Page<Douane> searchBetweenDatesWithKey(@Param("date1") LocalDate date1, @Param("date2") LocalDate date2, @Param("key") String key, Pageable pageable);
-
+            "(CONCAT('', d.numColis) = :key OR CONCAT('', d.bloc) = :key) OR " +
+            "(LOWER(d.numColis) LIKE LOWER(CONCAT('%', :key, '%')) OR " +
+            "LOWER(d.nom) LIKE LOWER(CONCAT('%', :key, '%')) OR " +
+            "CONCAT('', d.sequence) LIKE CONCAT('%', :key, '%') OR " +
+            "CONCAT('', d.bloc) LIKE CONCAT('%', :key, '%')))")
+    Page<Douane> searchBetweenDatesWithKey(
+            @Param("date1") LocalDate date1,
+            @Param("date2") LocalDate date2,
+            @Param("key") String key,
+            Pageable pageable);
     @Query("SELECT d FROM Douane d WHERE d.dateArrivee BETWEEN :date1 AND :date2 AND d.delivered = :etat AND (" +
-            "LOWER(d.numColis) LIKE :key OR " +
-            "LOWER(d.nom) LIKE :key OR " +
-            "CAST(d.sequence AS string) LIKE :key OR " +
-            "d.bloc = :key)")
-    Page<Douane> searchBetweenDatesWithKeyAndEtat(@Param("date1") LocalDate date1, @Param("date2") LocalDate date2, @Param("key") String key, @Param("etat") boolean etat, Pageable pageable);
-
+            "(CONCAT('', d.numColis) = :key OR CONCAT('', d.bloc) = :key) OR " +
+            "(LOWER(d.numColis) LIKE LOWER(CONCAT('%', :key, '%')) OR " +
+            "LOWER(d.nom) LIKE LOWER(CONCAT('%', :key, '%')) OR " +
+            "CONCAT('', d.sequence) LIKE CONCAT('%', :key, '%') OR " +
+            "CONCAT('', d.bloc) LIKE CONCAT('%', :key, '%')))")
+    Page<Douane> searchBetweenDatesWithKeyAndEtat(
+            @Param("date1") LocalDate date1,
+            @Param("date2") LocalDate date2,
+            @Param("key") String key,
+            @Param("etat") boolean etat,
+            Pageable pageable);
     Page<Douane> findByDelivered(Boolean etat, Pageable pageable);
 
 

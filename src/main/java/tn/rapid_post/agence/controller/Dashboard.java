@@ -102,7 +102,7 @@ public class Dashboard {
         if (date1 != null && date2 != null) {
             // Recherche par dates
             if (StringUtils.hasText(key)) {
-                key = "%" + key.trim().toLowerCase() + "%";
+                key = key.trim().toLowerCase() ;
                 if (etat == null) {
                     douanePage = douaneRepo.searchBetweenDatesWithKey(date1, date2, key, pageable);
                 } else {
@@ -118,7 +118,7 @@ public class Dashboard {
         } else {
             // Recherche sans dates
             if (StringUtils.hasText(key)) {
-                key = "%" + key.trim().toLowerCase() + "%";
+                key =  key.trim().toLowerCase() ;
                 if (etat == null) {
                     douanePage = douaneRepo.searchMultiFields(key, pageable);
                 } else {
@@ -240,7 +240,22 @@ if (StringUtils.hasText(sequence)) {
     }
 
 
+}else {
+    douane.setSequence(null);
+    douane.setDelivered(false);
+    douane.setDateSortie(null);
+    douane.setFraisMagasin(0);
+    douane.setFraisDedouane(0);
+    douane.setFraisReemballage(0);
+    douane.setTotPayer(0);
 }
+if (!douane.isDelivered()) {
+    douane.setDroitDouane(0);
+    douane.setFraisMagasin(0);
+    douane.setFraisDedouane(0);
+    douane.setFraisReemballage(0);
+    douane.setTotPayer(0);
+}else {
 if (StringUtils.hasText(droitDouane)) {
     douane.setDroitDouane(Double.parseDouble(droitDouane));
     long daysBetween = ChronoUnit.DAYS.between(dateArrivee, dateSortie);
@@ -252,7 +267,7 @@ if (StringUtils.hasText(droitDouane)) {
     douane.setFraisDedouane(douane.getNbColis() * 4);
     douane.setFraisReemballage(douane.getNbColis() * 2);
     douane.setTotPayer(total);
-}
+}}
             historyDouanerepo.save(new HistoryDouane(douane.getDateArrivee(),douane.getDateSortie(),douane.getNumColis(),String.valueOf(douane.getTotPayer()),douane.getSequence(), findLogged().getUsername(),String.valueOf(douane.getBloc()), "Modification par administrateur "));
             douaneRepo.save(douane);
 

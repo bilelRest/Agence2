@@ -27,6 +27,7 @@ public class Douane {
     private boolean delivered;
     private String origin;
     private Long bloc;
+    private Long blocFin;
     private String sequence;
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean rePrint;
@@ -289,5 +290,13 @@ private boolean situation;
 
     public void setValidateSituation(boolean validateSituation) {
         this.validateSituation = validateSituation;
+    }
+
+    public Long getBlocFin() {
+        return blocFin;
+    }
+
+    public void setBlocFin(Long blocFin1) {
+        this.blocFin =blocFin1;
     }
 }

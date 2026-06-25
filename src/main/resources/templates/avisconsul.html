@@ -19,7 +19,7 @@
         <div class="card-body ">
             <form th:action="@{avisconsul}" method="get" class="row g-3 align-items-center">
                 <div class="col-auto">
-                    <label for="colis" class="form-label">Saisir le N° du colis</label>
+                    <label for="colis" class="form-label">Saisir le N° du colis ou N° bloc</label>
                 </div>
                 <div class="col-auto">
                     <input required id="colis" type="text" name="colis" class="form-control">
@@ -35,77 +35,88 @@
             </div>
         </div>
 
-        <div th:if="${douane!=null}" class="card-body">
-            <form id="formEdit" action="#" method="post">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <label for="numColis" class="form-label">Numéro</label>
-                        <input readonly type="text" class="form-control" id="numColis" th:value="${douane.numColis}" name="numColis">
+        <div th:if="${douaneList != null and !douaneList.isEmpty()}" class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Bloc</th>
+                        <th>Nombre</th>
+                        <th>Poids (kg)</th>
+                        <th>Destinataire</th>
+                        <th>Origine</th>
+                        <th>Date arrivée</th>
+                        <th>Sans facture</th>
+                        <th>Etat</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="douane : ${douaneList}">
+                        <td th:text="${douane.numColis}"></td>
+                        <td th:text="${douane.bloc + (douane.nbColis > 1 ? ' - ' + (douane.bloc + douane.nbColis - 1) : '')}"></td>                <td th:text="${douane.numColis.toUpperCase()}"></td>
+                        <td th:text="${douane.nbColis}"></td>
+                        <td th:text="${douane.poid}"></td>
+                        <td th:text="${douane.nom}"></td>
+                        <td th:text="${douane.origin}"></td>
+                        <td th:text="${douane.dateArrivee}"></td>
+                        <td>
+                            <input type="checkbox" disabled
+                                   th:checked="${douane.observation == 'Sans facture'}"
+                                   class="form-check-input">
+                        </td>
+                        <td>
+    <span th:if="${reprintdelivered}" class="badge bg-success">
+        <i class="bi bi-check-circle-fill"></i> Livré
+    </span>
+                            <span th:unless="${reprintdelivered}" class="badge bg-warning text-dark">
+        <i class="bi bi-clock-fill"></i> En attente
+    </span>
+                        </td>                        <td>
+                            <!-- Bouton d'impression pour chaque ligne -->
+                            <div th:if="${reprintdelivered}">
+                                <a target="_blank"
+                                   class="btn btn-success btn-sm btn-print"
+                                   th:href="@{/reprintdelivered(colis=${douane.numColis})}"
+                                   title="Imprimer ce colis">
+                                    <i class="bi bi-printer-fill"></i> Imprimer
+                                </a>
+                            </div>
+                            <div th:if="${reprintnotdelivered}">
+                                <a target="_blank"
+                                   class="btn btn-success btn-sm btn-print"
+                                   th:href="@{/reprintnotdelivered(colis=${douane.numColis})}"
+                                   title="Imprimer ce colis">
+                                    <i class="bi bi-printer-fill"></i> Imprimer
+                                </a>
+                            </div>
+
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Messages d'état -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="alert alert-danger text-center" th:if="${exist}">
+                        Colis déjà existant
                     </div>
-                    <div class="col-md-2">
-                        <label for="bloc" class="form-label">Bloc</label>
-                        <input readonly th:value="${douane.bloc}" type="text" class="form-control" id="bloc" name="bloc">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="nbColis" class="form-label">Nombre</label>
-                        <input readonly th:value="${douane.nbColis}" type="number" class="form-control" id="nbColis" name="nbColis">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="poidColis" class="form-label">Poids (kg)</label>
-                        <input readonly th:value="${douane.poid}" type="text" class="form-control" id="poidColis" name="poidColis">
-                    </div>
-                    <div class="col-md-5">
-                        <label for="nomDest" class="form-label">Destinataire</label>
-                        <input readonly th:value="${douane.nom}" type="text" class="form-control" id="nomDest" name="nomDest">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="origin" class="form-label">Origine</label>
-                        <input readonly th:value="${douane.origin}" type="text" class="form-control" id="origin" name="origin">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="datear" class="form-label">Date arrivée</label>
-                        <input readonly th:value="${douane.dateArrivee}" type="date" class="form-control" id="datear" name="datear">
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <div class="form-check">
-                            <input disabled readonly class="form-check-input" th:checked="${douane.observation=='Sans facture'}" type="checkbox" id="observation" name="observation">
-                            <label class="form-check-label" for="observation">Sans facture</label>
-                        </div>
-                    </div>
-                    <div  th:if="${reprintdelivered}" class="card-shadow">
-                        <a style="margin-left:80%"
-                           target="_blank"
-                           class="btn btn-success btn-print"
-                           th:href="@{/reprintdelivered(colis=${douane.numColis})}"
-                           title="Imprimer ce colis">
-                            <i class="bi bi-printer-fill"></i>Imprimer
-                        </a>
-                    </div>
-                    <div  th:if="${reprintnotdelivered}" class="card-shadow">
-                        <a style="margin-left:80%"
-                           target="_blank"
-                           class="btn btn-success btn-print"
-                           th:href="@{/reprintnotdelivered(colis=${douane.numColis})}"
-                           title="Imprimer ce colis">
-                            <i class="bi bi-printer-fill"></i>Imprimer
-                        </a>
+                    <div class="alert alert-success text-center" th:if="${success}">
+                        Ajouté avec succès
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Messages d'état -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert alert-danger text-center" th:if="${exist}">
-                            Colis déjà existant
-                        </div>
-                        <div class="alert alert-success text-center" th:if="${success}">
-                            Ajouté avec succès
-                        </div>
-                    </div>
-
-                </div>
-            </form>
-
+        <!-- Message si la liste est vide -->
+        <div th:if="${douaneList == null or douaneList.isEmpty()}" class="card-body">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> Aucun colis trouvé
+            </div>
         </div>
     </div>
 </div>

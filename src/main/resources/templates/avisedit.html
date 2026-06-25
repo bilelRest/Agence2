@@ -166,7 +166,16 @@ document.getElementById('bloclist').innerHTML = resultat;    }
                         <!-- Nombre -->
                         <div class="col-auto">
                             <label for="nbColis" class="form-label">Nombre</label>
-                            <input onchange="updateBlocs()" th:value="${douane.nbColis}" min="1" type="number" style="width: 60px" class="form-control" id="nbColis"  name="nbColis" value="0" required>
+                            <input onchange="updateBlocs()"
+                                   th:value="${douane.nbColis}"
+                                   min="1"
+                                   type="number"
+                                   style="width: 60px"
+                                   th:class="${last == true ? 'form-control' : 'form-control readonly'}"
+                                   th:readonly="${last == false}"
+                                   id="nbColis"
+                                   name="nbColis"
+                                   required>
                         </div>
 
                         <!-- Poids -->

@@ -299,9 +299,26 @@ public String setprinted(@RequestParam(value = "id")String id){
                            @RequestParam(value = "success", required = false) boolean success,
                            @RequestParam(value = "id", required = false) String id,
                            @RequestParam(value = "error",required = false)String error) {
-        Douane max= douaneRepo.findTopByOrderByBlocDesc();
-        model.addAttribute("max",max.getBloc()+max.getNbColis());
-        System.out.println("Bloc max "+max);
+        Douane max=douaneRepo.findTopByOrderByBlocDesc();
+       // boolean last=false;
+        if(StringUtils.hasText(id)){
+        Optional< Douane> douane=    douaneRepo.findById(Long.parseLong(id));
+            douane.ifPresent(value -> model.addAttribute("max", value.getBloc()));
+            if (douane.isPresent()){
+                if (!Objects.equals(douane.get().getBloc(), max.getBloc()))
+                    //last=true;
+                    model.addAttribute("last",false);
+
+
+                else model.addAttribute("last",true);
+            }
+
+
+
+        }else {
+            model.addAttribute("max", max.getBloc() + max.getNbColis());
+            System.out.println("Bloc max " + max);
+        }
         boolean isAdmin = false;
         for (AppRole appRole : findLogged().getRoles()) {
             if ("ADMIN".equals(appRole.getName())) {
@@ -330,6 +347,7 @@ model.addAttribute("date1",LocalDate.now());
                 douane = new Douane();
             }
         }
+
         model.addAttribute("datear", LocalDate.now());
         model.addAttribute("douane", douane);
         model.addAttribute("edit", edit);
@@ -370,6 +388,7 @@ model.addAttribute("date1",LocalDate.now());
                 colis.setDateArrivee(datear);
                 colis.setNbColis(nbColis);
                 colis.setBloc(Long.parseLong(bloc));
+               // colis.setBlocFin();
                 colis.setOrigin(origin.toUpperCase());
                 colis.setNumColis(numColis);
                 colis.setPoid(poidColis);
@@ -382,7 +401,7 @@ model.addAttribute("date1",LocalDate.now());
                 colis.setTotPayer(0);
                 colis.setPrinted(false);
                 colis.setDelivered(false);
-                colis.setDateSortie(LocalDate.now());
+                //colis.setDateSortie(LocalDate.now());
                 colis.setValidated(true);
                 colis.setAppUser(findLogged());
 
@@ -410,6 +429,7 @@ model.addAttribute("date1",LocalDate.now());
                 colis.setDateArrivee(datear);
                 colis.setNbColis(nbColis);
                 colis.setBloc(Long.parseLong(bloc));
+                //colis.setBlocFin();
                 colis.setOrigin(origin.toUpperCase());
                 colis.setNumColis(numColis);
                 colis.setPoid(poidColis);
@@ -422,7 +442,7 @@ model.addAttribute("date1",LocalDate.now());
                 colis.setTotPayer(0);
                 colis.setPrinted(false);
                 colis.setDelivered(false);
-                colis.setDateSortie(LocalDate.now());
+                //colis.setDateSortie(LocalDate.now());
                 colis.setValidated(true);
                 colis.setAppUser(findLogged());
 
@@ -591,32 +611,36 @@ System.out.println("admin recu "+admin);
         }
         model.addAttribute("logged",findLogged().getNomPrenom().toUpperCase());
         model.addAttribute("isAdmin", isAdmin);
-        Douane douane=new Douane();
+        List<Douane> douane=new ArrayList<>();
         boolean reprintnotdelivered=false;
         boolean reprintdelivered=false;
         boolean empty=false;
 
         if(StringUtils.hasText(colis)){
-            if (douaneRepo.findByNumColisIgnoreCase(colis)!=null){
-            douane=douaneRepo.findByNumColisIgnoreCase(colis);
+            if (douaneRepo.findByNumColisIgnoreCase1(colis)!=null){
+            douane=douaneRepo.findByNumColisIgnoreCase1(colis);
 
-                if (douane.isDelivered()) {
-                    System.out.println(douane.isDelivered());
-                    reprintdelivered = true;
+for(Douane douane1:douane) {
+    System.out.println(douane1.getBloc());
+    if (douane1.isDelivered()) {
+        System.out.println(douane1.isDelivered());
+        reprintdelivered = true;
+        reprintnotdelivered=false;
 
-                } else {
-                    reprintnotdelivered = true;
-                }
-
+    } else {
+        reprintdelivered=false;
+        reprintnotdelivered = true;
+    }
+}
 
             }
         }else {
-            douane=new Douane();
+            douane=new ArrayList<>();
         }
         model.addAttribute("empty",empty);
         model.addAttribute("reprintdelivered",reprintdelivered);
         model.addAttribute("reprintnotdelivered",reprintnotdelivered);
-model.addAttribute("douane",douane);
+model.addAttribute("douaneList",douane);
 
         return "avisconsul";
     }

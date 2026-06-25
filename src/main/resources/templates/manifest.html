@@ -59,8 +59,7 @@
             </thead>
             <tbody></tbody>
             <tr th:each="douane,ind:${list}">
-                <td th:text="${douane.bloc}"></td>
-                <td th:text="${douane.numColis.toUpperCase()}"></td>
+                <td th:text="${douane.bloc + (douane.nbColis > 1 ? ' - ' + (douane.bloc + douane.nbColis - 1) : '')}"></td>                <td th:text="${douane.numColis.toUpperCase()}"></td>
                 <td th:text="${douane.nbColis}"></td>
                 <td th:text="${douane.poid}"></td>
                 <td th:text="${douane.nom}"></td>

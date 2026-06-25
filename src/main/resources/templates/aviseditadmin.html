@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date de sortie</label>
-                                    <input type="date" th:value="${douane.dateSortie}" name="dateSortie" class="form-control">
+                                    <input type="date" th:value="${douane.dateSortie}" readonly name="dateSortie" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -87,7 +87,7 @@
                                        name="sequence"
                                        th:value="${douane.sequence}"
                                        class="form-control"
-                                       required>
+                                       >
                                 <div class="invalid-feedback" th:if="${notValidated}">
                                     Numéro de séquence existant ou invalide.
                                 </div>
@@ -101,7 +101,7 @@
                                        step="0.001"
                                        th:value="${douane.droitDouane}"
                                        class="form-control"
-                                       required>
+                                       >
                             </div>
                         </div>
                     </div>
