@@ -845,6 +845,7 @@ model.addAttribute("selected",selected);
     status.setComplete();
     return "printAvis";
 }
+@CrossOrigin(value = "*")
 @GetMapping(value = "/check",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> check(@RequestParam(value = "col")String col){
         Douane douane=douaneRepo.findByNumColisIgnoreCase(col);
