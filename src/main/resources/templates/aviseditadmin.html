@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Bloc</label>
-                                    <input th:value="${douane.bloc}" name="bloc" class="form-control">
+                                    <input th:value="${douane.bloc}" name="bloc" readonly class="form-control">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date d'arrivée</label>
@@ -71,7 +71,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Quantité</label>
-                                    <input th:value="${douane.nbColis}" name="nbColis" type="number" class="form-control">
+                                    <input th:value="${douane.nbColis}"  th:readonly="${last == false}" name="nbColis" type="number" class="form-control">
                                 </div>
                             </div>
                         </div>

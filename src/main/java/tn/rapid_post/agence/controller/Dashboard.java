@@ -179,8 +179,15 @@ public class Dashboard {
         model.addAttribute("logged",findLogged().getNomPrenom().toUpperCase());
         if (StringUtils.hasText(id)){
             Optional<Douane> douane=douaneRepo.findById(Long.parseLong(id));
+            Douane max= douaneRepo.findTopByOrderByBlocDesc();
             if (douane.isPresent()){
                 model.addAttribute("douane",douane.get());
+                if (!Objects.equals(douane.get().getBloc(), max.getBloc()))
+                    //last=true;
+                    model.addAttribute("last", false);
+
+
+                else model.addAttribute("last", true);
             }
 
         }
