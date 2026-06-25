@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,10 +24,12 @@ import tn.rapid_post.agence.sec.entity.AppRole;
 import tn.rapid_post.agence.sec.entity.AppUser;
 import tn.rapid_post.agence.sec.repo.UserRepository;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -840,4 +844,13 @@ model.addAttribute("selected",selected);
 
     status.setComplete();
     return "printAvis";
-}}
+}
+@GetMapping(value = "/check",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> check(@RequestParam(value = "col")String col){
+        Douane douane=douaneRepo.findByNumColisIgnoreCase(col);
+        if (douane != null) return ResponseEntity.ok().body("true");
+        else return ResponseEntity.ok().body("false");
+}
+
+
+}

@@ -84,10 +84,13 @@ function verif(input) {
 
     const alphaNumRegex = /^[a-zA-Z0-9]+$/;
 
+    // Si vide, on cache le message et on sort
     if (valeur === "") {
+        message.style.display = "none";
         return;
     }
 
+    // Vérification des caractères alphanumériques
     if (!alphaNumRegex.test(valeur)) {
         son.play();
         message.innerText = "Numéro invalide : " + valeur;
@@ -97,26 +100,63 @@ function verif(input) {
         return;
     }
 
+    // Vérification du format
+    let isValid = false;
+
     if (/^\d+$/.test(valeur)) {
-        if (valeur.length != 10) {
+        // Format numérique : doit faire 10 chiffres
+        if (valeur.length === 10) {
+            isValid = true;
+        } else {
             son.play();
-            message.innerText = "Numéro incorrect  : " + valeur;
+            message.innerText = "Numéro incorrect : " + valeur + " (doit contenir 10 chiffres)";
             message.style.display = "block";
             input.value = "";
             setTimeout(() => input.focus(), 0);
             return;
         }
-    } else if (!/^[a-zA-Z]{2}\d{9}[a-zA-Z]{2}$/.test(valeur)) {
-        son.play();
-        message.innerText = "Format alphanumérique invalide : " + valeur;
-        message.style.display = "block";
-        input.value = "";
-        setTimeout(() => input.focus(), 0);
-        return;
+    } else {
+        // Format alphanumérique : 2 lettres + 9 chiffres + 2 lettres
+        if (/^[a-zA-Z]{2}\d{9}[a-zA-Z]{2}$/.test(valeur)) {
+            isValid = true;
+        } else {
+            son.play();
+            message.innerText = "Format alphanumérique invalide : " + valeur + " (format attendu: AA123456789BB)";
+            message.style.display = "block";
+            input.value = "";
+            setTimeout(() => input.focus(), 0);
+            return;
+        }
     }
 
-    // ✅ Saisie correcte
-    message.style.display = "none";
+    // ✅ Saisie correcte - Vérification dans la base de données
+    if (isValid) {
+        message.style.display = "none";
+
+        fetch('http://localhost:8080/check?col=' + encodeURIComponent(valeur))
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data === true) {
+                    // Colis existe déjà
+                    son.play();
+                    message.innerText = "⚠️ Ce numéro de colis existe déjà : " + valeur;
+                    message.style.display = "block";
+                    input.value = "";
+                    setTimeout(() => input.focus(), 0);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur de vérification:', error);
+                message.innerText = "❌ Erreur de connexion au serveur";
+                message.style.color = "red";
+                message.style.display = "block";
+            });
+    }
 }
 
     function updateBlocs(){
