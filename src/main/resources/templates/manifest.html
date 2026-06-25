@@ -34,8 +34,12 @@
     <div th:if="${list.size()>0}" class="card-body">
         <div style="margin-top:10px" class="alert alert-primary d-flex align-items-center justify-content-between p-3">
             <div class="d-flex align-items-center">
-                <h4 class="m-0" th:text="'Total : ' + ${list.size()}"></h4>
+                <h4 class="m-0" th:text="'Total avis : ' + ${list.size()}"></h4>
             </div>
+            <div class="d-flex align-items-center">
+                <h4 class="m-0" th:text="'Total bloc : ' + ${total}"></h4>
+            </div>
+
 
             <div th:if="${list.size() > 0}">
                 <form method="get" th:action="@{/manifestprint}" target="_blank" class="m-0">
