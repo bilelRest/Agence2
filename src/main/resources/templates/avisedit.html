@@ -133,7 +133,7 @@ function verif(input) {
     if (isValid) {
         message.style.display = "none";
 
-        fetch('http://localhost:8080/check?col=' + encodeURIComponent(valeur))
+        fetch('/check?col=' + encodeURIComponent(valeur))
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Erreur réseau: ' + response.status);
@@ -195,7 +195,7 @@ document.getElementById('bloclist').innerHTML = resultat;    }
                         <!-- Numéro -->
                         <div class="col-auto">
                             <label for="numColis" class="form-label">Numéro</label>
-                            <input  onblur="verif(this)" type="text" style="width: 200px" class="form-control" th:value="${douane.numColis}" id="numColis" name="numColis" required>
+                            <input th:autofocus="${edit == false}" onblur="verif(this)" type="text" style="width: 200px" class="form-control" th:value="${douane.numColis}" id="numColis" name="numColis" required>
                         </div>
                         <!-- Bloc -->
                         <div class="col-auto">
@@ -248,8 +248,12 @@ document.getElementById('bloclist').innerHTML = resultat;    }
                                 <input th:checked="${douane.observation=='Sans facture'}" class="form-check-input" type="checkbox" id="observation" name="observation">
                                 <label class="form-check-label" for="observation">Sans facture</label>
                             </div>
-                            <button th:if="${edit==false}" type="submit" onclick="return confirm('Le nombre de pièces de ce colis est \n\n '+nbColis.value +'\n\n confirmer ?')" class="btn btn-success">Ajouter</button>
-                            <button th:if="${edit==true}" type="submit" class="btn btn-primary">Modifier</button>
+                            <button th:if="${edit==false}"
+                                    type="submit"
+
+                                    class="btn btn-success">
+                                Ajouter
+                            </button>                            <button th:if="${edit==true}" type="submit" class="btn btn-primary">Modifier</button>
 
                         </div>
                     </div>

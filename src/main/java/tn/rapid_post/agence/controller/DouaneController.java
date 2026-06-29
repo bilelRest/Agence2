@@ -355,11 +355,19 @@ model.addAttribute("date1",LocalDate.now());
         model.addAttribute("datear", LocalDate.now());
         model.addAttribute("douane", douane);
         model.addAttribute("edit", edit);
+
         List<Douane> colisList = new ArrayList<>();
         colisList = douaneRepo.findByPrintedFalse();
         model.addAttribute("success", success);
         model.addAttribute("exist", exist);
-        model.addAttribute("colisList", colisList);
+        //@SuppressWarnings("unchecked")
+        List<Douane> colis = (List<Douane>) colisList;
+
+        model.addAttribute("colisList",
+                colis.stream()
+                        .sorted(Comparator.comparing(Douane::getBloc).reversed())
+                        .collect(Collectors.toList())
+        );
         return "avisedit";
     }
 

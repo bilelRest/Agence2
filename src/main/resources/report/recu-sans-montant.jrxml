@@ -101,7 +101,7 @@
 
 			<textField>
 
-				<reportElement x="180" y="530" width="100" height="20" uuid="f3b6610d-8ba9-4a89-94de-c6c900f3a04d"/>
+				<reportElement x="180" y="570" width="100" height="20" uuid="f3b6610d-8ba9-4a89-94de-c6c900f3a04d"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>

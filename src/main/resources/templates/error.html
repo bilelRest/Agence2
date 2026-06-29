@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur - Gestion des B3</title>
+    <style>
+        .error-wrapper {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 3rem 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-icon {
+            font-size: 4.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-code {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 0.2rem;
+        }
+
+        .error-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .error-actions .btn {
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .error-actions .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Couleurs par type d'erreur */
+        .text-403 { color: #f59e0b; }
+        .text-other { color: #ef4444; }
+
+        .btn-403 { background: #f59e0b; border-color: #f59e0b; color: white; }
+        .btn-403:hover { background: #d97706; border-color: #d97706; color: white; }
+
+        .btn-other { background: #ef4444; border-color: #ef4444; color: white; }
+        .btn-other:hover { background: #dc2626; border-color: #dc2626; color: white; }
+
+        @media (max-width: 576px) {
+            .error-container {
+                padding: 2rem 1.5rem;
+            }
+            .error-code {
+                font-size: 3rem;
+            }
+            .error-icon {
+                font-size: 3.5rem;
+            }
+            .error-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="error-wrapper">
+        <div class="error-container">
+            <div id="errorContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Récupérer le code d'erreur depuis l'URL
+        function getErrorCode() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            return code ? parseInt(code) : null;
+        }
+
+        // Configuration des erreurs
+        const errors = {
+            403: {
+                icon: 'bi-shield-lock',
+                code: '403',
+                title: 'Accès Interdit',
+                message: 'Vous n\'avez pas les autorisations nécessaires pour accéder à cette page.',
+                btnClass: 'btn-403',
+                textClass: 'text-403'
+            },
+            other: {
+                icon: 'bi-exclamation-triangle',
+                code: 'Erreur',
+                title: 'Erreur Inconnue',
+                message: 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.',
+                btnClass: 'btn-other',
+                textClass: 'text-other'
+            }
+        };
+
+        // Afficher l'erreur
+        function displayError() {
+            const code = getErrorCode();
+            const error = (code === 403) ? errors[403] : errors.other;
+
+            // Si c'est une autre erreur avec code spécifique
+            if (code && code !== 403) {
+                error.code = code;
+                error.title = 'Erreur ' + code;
+            }
+
+            document.getElementById('errorContent').innerHTML = `
+                <div class="error-icon">
+                    <i class="bi ${error.icon}"></i>
+                </div>
+                <div class="error-code ${error.textClass}">${error.code}</div>
+                <h1 class="error-title">${error.title}</h1>
+                <p class="error-message">${error.message}</p>
+                <div class="error-actions">
+                    <a href="/welcome" class="btn ${error.btnClass}">
+                        <i class="bi bi-house"></i> Accueil
+                    </a>
+                    <button onclick="window.history.back()" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </button>
+                </div>
+            `;
+        }
+
+        // Initialiser
+        document.addEventListener('DOMContentLoaded', displayError);
+    </script>
+</div>
+</body>
+</html>
